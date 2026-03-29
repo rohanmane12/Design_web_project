@@ -1,0 +1,28 @@
+
+> website@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.14.43.34:3000
+- Environments: .env.local, .env
+✓ Ready in 872ms
+
+ GET /en/home 200 in 2.1s (next.js: 1288ms, proxy.ts: 166ms, generate-params: 899ms, application-code: 627ms)
+ GET /en/home 200 in 1925ms (next.js: 1734ms, proxy.ts: 10ms, generate-params: 1325ms, application-code: 181ms)
+ GET /en/home 200 in 282ms (next.js: 40ms, proxy.ts: 26ms, generate-params: 20ms, application-code: 216ms)
+ GET /en/request-quote 200 in 2.4s (next.js: 2.3s, proxy.ts: 13ms, generate-params: 809ms, application-code: 73ms)
+ GET /en/home 200 in 86ms (next.js: 29ms, proxy.ts: 9ms, generate-params: 18ms, application-code: 48ms)
+ GET /en/home 200 in 50ms (next.js: 28ms, proxy.ts: 9ms, generate-params: 15ms, application-code: 14ms)
+ GET /en/home 200 in 73ms (next.js: 15ms, proxy.ts: 8ms, generate-params: 78µs, application-code: 50ms)
+ GET /en/services 200 in 896ms (next.js: 825ms, proxy.ts: 9ms, generate-params: 753ms, application-code: 62ms)
+ GET /en/about 200 in 888ms (next.js: 825ms, proxy.ts: 9ms, generate-params: 765ms, application-code: 54ms)
+ GET /en/contact 200 in 1757ms (next.js: 1699ms, proxy.ts: 9ms, generate-params: 701ms, application-code: 49ms)
+ GET /en/request-quote 200 in 104ms (next.js: 36ms, proxy.ts: 11ms, generate-params: 20ms, application-code: 57ms)
+ GET /en/request-quote 200 in 208ms (next.js: 30ms, proxy.ts: 10ms, generate-params: 15ms, application-code: 168ms)
+ GET /en/request-quote 200 in 177ms (next.js: 25ms, proxy.ts: 6ms, generate-params: 14ms, application-code: 146ms)
+ GET /en/home 200 in 65ms (next.js: 24ms, proxy.ts: 5ms, generate-params: 13ms, application-code: 36ms)
+✓ Compiled in 251ms
+ GET /en/home 200 in 464ms (next.js: 142ms, proxy.ts: 94ms, generate-params: 15ms, application-code: 228ms)
+ GET /en/home 200 in 163ms (next.js: 14ms, proxy.ts: 8ms, generate-params: 54µs, application-code: 140ms)
+ GET /en/home 200 in 75ms (next.js: 12ms, proxy.ts: 7ms, generate-params: 31µs, application-code: 55ms)

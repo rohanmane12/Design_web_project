@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import { locales, localeNames, Locale } from '@/i18n';
 export default function Header() {
   const t = useTranslations();
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Extract current locale from pathname
@@ -27,7 +28,7 @@ export default function Header() {
 
   const changeLanguage = (newLocale: Locale) => {
     // Navigate to the same page but with new locale
-    window.location.href = `/${newLocale}${pathWithoutLocale}`;
+    router.push(`/${newLocale}${pathWithoutLocale}`);
   };
 
   return (
@@ -69,7 +70,7 @@ export default function Header() {
           </div>
 
           {/* CTA */}
-          <Link href={`/${currentLocale}/enquiry`} className="header-cta">
+          <Link href={`/${currentLocale}/request-quote`} className="header-cta">
             {t('common.enquiry')}
           </Link>
         </div>
@@ -100,7 +101,7 @@ export default function Header() {
               ))}
 
               <Link
-                href={`/${currentLocale}/enquiry`}
+                href={`/${currentLocale}/request-quote`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="header-cta text-center"
               >

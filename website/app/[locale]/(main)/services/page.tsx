@@ -1,11 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { Locale } from '@/i18n';
 
 export default function ServicesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const params = useParams();
+  const currentLocale = (params.locale as Locale) || 'en';
 
   const categories = [
     { id: 'all', label: 'All Services' },
@@ -66,7 +70,7 @@ export default function ServicesPage() {
             {filteredServices.map((service) => (
               <Link
                 key={service.id}
-                href="/en/enquiry"
+                href={`/${currentLocale}/request-quote`}
                 className="card"
               >
                 <h3 className="card-title">{service.title}</h3>

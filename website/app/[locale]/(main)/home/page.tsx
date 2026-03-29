@@ -1,11 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Star, Truck, Palette, Headphones } from 'lucide-react';
+import { Locale } from '@/i18n';
 
 export default function HomePage() {
   const t = useTranslations();
+  const params = useParams();
+  const currentLocale = (params.locale as Locale) || 'en';
 
   return (
     <div className="bg-white">
@@ -23,7 +27,7 @@ export default function HomePage() {
               {t('home.hero.cta')}
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/en/enquiry" className="btn btn-secondary">
+            <Link href={`/${currentLocale}/request-quote`} className="btn btn-secondary">
               {t('common.enquiry')}
             </Link>
           </div>
@@ -131,7 +135,7 @@ export default function HomePage() {
           <p className="hero-subtitle">
             Contact us today for a custom quote on your printing and design needs.
           </p>
-          <Link href="/en/enquiry" className="btn btn-secondary">
+          <Link href={`/${currentLocale}/request-quote`} className="btn btn-secondary">
             {t('common.enquiry')}
             <ArrowRight className="w-5 h-5" />
           </Link>

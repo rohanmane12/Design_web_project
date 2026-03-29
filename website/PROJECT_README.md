@@ -104,7 +104,7 @@ website/
 | Product Details | `/[locale]/products/[id]` | Product info with customization |
 | About Us | `/[locale]/about` | Company info, mission, vision |
 | Contact | `/[locale]/contact` | Contact info, FAQ |
-| Enquiry | `/[locale]/enquiry` | Quote request form |
+| Enquiry | `/[locale]/request-quote` | Quote request form |
 | Admin | `/[locale]/admin` | Dashboard for managing products & enquiries |
 
 ## 🌐 Languages

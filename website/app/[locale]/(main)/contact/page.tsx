@@ -1,11 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { MapPin, Phone, Mail, Send } from 'lucide-react';
+import { Locale } from '@/i18n';
 
 export default function ContactPage() {
   const t = useTranslations();
+  const params = useParams();
+  const currentLocale = (params.locale as Locale) || 'en';
 
   return (
     <div className="bg-white min-h-screen">
@@ -45,7 +49,7 @@ export default function ContactPage() {
           </div>
 
           <div className="text-center">
-            <Link href="/en/enquiry" className="btn btn-primary">
+            <Link href={`/${currentLocale}/request-quote`} className="btn btn-primary">
               {t('contact.sendEnquiry')}
               <Send className="w-5 h-5" />
             </Link>

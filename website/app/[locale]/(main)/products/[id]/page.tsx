@@ -85,7 +85,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     
     // Store in sessionStorage to use on enquiry page
     sessionStorage.setItem('enquiryData', JSON.stringify(enquiryData));
-    router.push(`/${currentLocale}/enquiry`);
+    router.push(`/${currentLocale}/request-quote`);
   };
 
   if (loading) {
