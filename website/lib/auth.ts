@@ -1,10 +1,10 @@
-import NextAuth from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { connectDB } from './db';
 import Admin from '@/models/Admin';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -19,17 +19,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         await connectDB();
         const admin = await Admin.findOne({ email: credentials.email });
-        
+
         if (!admin) {
           throw new Error('Invalid email or password');
         }
-        
+
         const isValid = await bcrypt.compare(credentials.password as string, admin.passwordHash);
-        
+
         if (!isValid) {
           throw new Error('Invalid email or password');
         }
-        
+
         return {
           id: admin._id.toString(),
           email: admin.email,
@@ -39,13 +39,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     })
   ],
-  pages: { 
+  pages: {
     signIn: '/en/admin/login',
     error: '/en/admin/login'
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -58,12 +58,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.email = token.email;
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.email = token.email as string;
       }
       return session;
     }
   },
   secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
-});
+};

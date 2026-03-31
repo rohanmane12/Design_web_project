@@ -1,7 +1,8 @@
-import { signOut } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
-  await signOut({ redirect: false });
-  return NextResponse.json({ success: true });
+  return NextResponse.json(
+    { error: 'Use the NextAuth client signOut() flow for logout.' },
+    { status: 410 }
+  );
 }

@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import type { Locale } from '@/i18n';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params.locale as Locale) || 'en';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,22 +21,16 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('password', password);
-
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        body: formData,
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Redirect to dashboard
-        router.push('/en/admin');
+      if (result?.ok) {
+        router.push(`/${locale}/admin`);
       } else {
-        setError(data.error || 'Login failed');
+        setError('Invalid email or password');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

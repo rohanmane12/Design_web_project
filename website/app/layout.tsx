@@ -10,7 +10,11 @@ export default async function RootLayout({
   const { locale } = await params;
   
   return (
-    <html lang={locale || 'en'} suppressHydrationWarning>
+    <html
+      lang={locale || 'en'}
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+    >
       <body suppressHydrationWarning>{children}</body>
     </html>
   );
