@@ -55,12 +55,12 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
             const Icon = item.icon;
             const localizedHref = withLocale(item.href);
             const isActive = pathname === localizedHref || pathname.startsWith(`${localizedHref}/`);
-            
+
             return (
               <Link
                 key={item.href}
                 href={localizedHref}
-                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all no-underline ${
                   isActive
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
                     : 'text-gray-600 hover:bg-gray-100'

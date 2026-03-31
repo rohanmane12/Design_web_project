@@ -38,7 +38,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
   const [currentLocale, setCurrentLocale] = useState<Locale>('en');
-  
+
   const productId = pathParams.id as string;
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         notes,
       },
     };
-    
+
     // Store in sessionStorage to use on enquiry page
     sessionStorage.setItem('enquiryData', JSON.stringify(enquiryData));
     router.push(`/${currentLocale}/request-quote`);
@@ -138,14 +138,14 @@ export default function ProductPage({ params }: ProductPageProps) {
           <nav className="flex items-center space-x-2 text-sm">
             <Link
               href={`/${currentLocale}/home`}
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-blue-600 no-underline"
             >
               {t('common.home')}
             </Link>
             <ChevronRight className="w-4 h-4 text-gray-400" />
             <Link
               href={`/${currentLocale}/services`}
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-blue-600 no-underline"
             >
               {t('common.services')}
             </Link>
@@ -274,7 +274,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   min="1"
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 />
               </div>
 
@@ -288,7 +288,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={t('product.notesPlaceholder')}
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
                 />
               </div>
             </div>

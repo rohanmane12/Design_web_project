@@ -32,21 +32,25 @@ export default function Header() {
   };
 
   return (
-    <header className="header">
-      <nav className="container header-nav">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <nav className="max-w-7xl mx-auto px-5 h-[70px] flex items-center justify-between gap-8">
         {/* Logo */}
-        <Link href={`/${currentLocale}/home`} className="header-logo">
-          <div className="header-logo-icon">D</div>
+        <Link href={`/${currentLocale}/home`} className="flex items-center gap-3 text-[#004B87] text-2xl font-bold no-underline">
+          <div className="w-10 h-10 bg-[#004B87] text-white rounded-lg flex items-center justify-center font-bold text-xl">
+            D
+          </div>
           <span>Design Concept</span>
         </Link>
 
         {/* Desktop Menu */}
-        <div className="header-menu">
+        <div className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={`/${currentLocale}${item.href}`}
-              className={pathname.includes(item.href) ? 'text-blue-600' : ''}
+              className={`text-[#1A1A1A] font-medium text-[0.9375rem] transition-colors hover:text-[#0066CC] no-underline ${
+                pathname.includes(item.href) ? 'text-blue-600' : ''
+              }`}
             >
               {item.label}
             </Link>
@@ -70,7 +74,10 @@ export default function Header() {
           </div>
 
           {/* CTA */}
-          <Link href={`/${currentLocale}/request-quote`} className="header-cta">
+          <Link
+            href={`/${currentLocale}/request-quote`}
+            className="bg-[#FF6600] text-white px-5 py-2.5 rounded font-semibold hover:bg-[#E55C00] transition-colors no-underline"
+          >
             {t('common.enquiry')}
           </Link>
         </div>
@@ -87,14 +94,16 @@ export default function Header() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white">
-          <div className="container py-4">
+          <div className="max-w-7xl mx-auto px-5 py-4">
             <div className="flex flex-col gap-4">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={`/${currentLocale}${item.href}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={pathname.includes(item.href) ? 'text-blue-600 font-medium' : ''}
+                  className={`text-[#1A1A1A] no-underline ${
+                    pathname.includes(item.href) ? 'text-blue-600 font-medium' : ''
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -103,7 +112,7 @@ export default function Header() {
               <Link
                 href={`/${currentLocale}/request-quote`}
                 onClick={() => setMobileMenuOpen(false)}
-                className="header-cta text-center"
+                className="bg-[#FF6600] text-white px-5 py-2.5 rounded font-semibold hover:bg-[#E55C00] transition-colors no-underline text-center"
               >
                 {t('common.enquiry')}
               </Link>

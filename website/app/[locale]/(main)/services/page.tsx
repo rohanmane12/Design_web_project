@@ -39,22 +39,26 @@ export default function ServicesPage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Hero */}
-      <section className="hero">
-        <div className="container">
-          <h1 className="hero-title">Our Services</h1>
-          <p className="hero-subtitle">Professional printing solutions for every need</p>
+      <section className="bg-gradient-to-br from-[#004B87] to-[#0066CC] text-white py-16">
+        <div className="max-w-7xl mx-auto px-5">
+          <h1 className="text-4xl font-bold mb-4">Our Services</h1>
+          <p className="text-xl opacity-90">Professional printing solutions for every need</p>
         </div>
       </section>
 
       {/* Filter Bar */}
-      <div className="filter-bar">
-        <div className="container">
-          <div className="filter-list">
+      <div className="sticky top-[70px] z-40 bg-white border-b border-[#DDDDDD] py-4">
+        <div className="max-w-7xl mx-auto px-5">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`filter-btn ${selectedCategory === cat.id ? 'active' : ''}`}
+                className={`px-4 py-2 border border-[#DDDDDD] bg-white rounded-full text-sm font-medium whitespace-nowrap transition-colors hover:border-[#004B87] ${
+                  selectedCategory === cat.id
+                    ? 'bg-[#004B87] text-white border-[#004B87]'
+                    : ''
+                }`}
               >
                 {cat.label}
               </button>
@@ -64,18 +68,18 @@ export default function ServicesPage() {
       </div>
 
       {/* Services Grid */}
-      <section className="section">
-        <div className="container">
-          <div className="grid grid-3">
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {filteredServices.map((service) => (
               <Link
                 key={service.id}
                 href={`/${currentLocale}/request-quote`}
-                className="card"
+                className="bg-white border border-[#DDDDDD] rounded-lg p-6 transition-all hover:shadow-lg hover:border-[#0066CC] no-underline"
               >
-                <h3 className="card-title">{service.title}</h3>
-                <p className="card-description">{service.description}</p>
-                <span className="card-link">
+                <h3 className="text-xl font-semibold mb-2 text-[#1A1A1A]">{service.title}</h3>
+                <p className="text-gray-600 text-sm mb-4">{service.description}</p>
+                <span className="text-[#0066CC] font-medium inline-flex items-center gap-1 no-underline">
                   Request Quote <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
