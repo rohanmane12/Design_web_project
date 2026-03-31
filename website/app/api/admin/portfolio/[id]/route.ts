@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Portfolio from '@/models/Portfolio';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const { id } = await params;
     const portfolio = await Portfolio.findById(id);
@@ -30,27 +37,36 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const { id } = await params;
     const body = await request.json();
-    
-    const portfolio = await Portfolio.findByIdAndUpdate(
-      id,
-      {
-        title: body.title,
-        description: body.description,
-        category: body.category,
-        images: body.images,
-        featured: body.featured,
-        active: body.active,
-      },
-      { new: true, runValidators: true }
-    );
-    
-    if (!portfolio) {
+
+    const existingPortfolio = await Portfolio.findById(id);
+
+    if (!existingPortfolio) {
       return NextResponse.json({ error: 'Portfolio item not found' }, { status: 404 });
     }
-    
+
+    const updatePayload = {
+      title: body.title ?? existingPortfolio.title,
+      description: body.description ?? existingPortfolio.description,
+      category: body.category ?? existingPortfolio.category,
+      images: body.images ?? existingPortfolio.images,
+      featured: body.featured ?? existingPortfolio.featured,
+      active: body.active ?? existingPortfolio.active,
+    };
+
+    const portfolio = await Portfolio.findByIdAndUpdate(id, updatePayload, {
+      new: true,
+      runValidators: true,
+    });
+
     return NextResponse.json(portfolio);
   } catch (error) {
     console.error('Error updating portfolio:', error);
@@ -66,6 +82,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const { id } = await params;
     

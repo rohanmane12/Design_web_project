@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
 export default function AdminLayout({
@@ -11,32 +11,45 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+  const params = useParams();
+  const locale = typeof params.locale === 'string' ? params.locale : 'en';
+  const [status, setStatus] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
+  const isLoginPage = pathname?.includes('/admin/login');
 
   useEffect(() => {
-    // Skip auth check on login page
-    if (pathname?.endsWith('/admin/login')) {
-      setLoading(false);
+    if (isLoginPage) {
       return;
     }
 
-    // Check authentication
+    let active = true;
+
     fetch('/api/admin/verify')
       .then(res => {
         if (res.ok) return res.json();
         throw new Error('Not authenticated');
       })
       .then(() => {
-        setAuthenticated(true);
-        setLoading(false);
+        if (active) {
+          setStatus('authenticated');
+        }
       })
       .catch(() => {
-        router.push('/en/admin/login');
+        if (active) {
+          setStatus('unauthenticated');
+        }
+        router.replace(`/${locale}/admin/login`);
       });
-  }, [pathname, router]);
 
-  if (loading) {
+    return () => {
+      active = false;
+    };
+  }, [isLoginPage, locale, router]);
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  if (status === 'checking') {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -44,7 +57,7 @@ export default function AdminLayout({
     );
   }
 
-  if (!authenticated) {
+  if (status !== 'authenticated') {
     return null;
   }
 

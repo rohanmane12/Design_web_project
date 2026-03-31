@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
+      secure_url: result.secure_url,
       url: result.secure_url,
       public_id: result.public_id,
       format: result.format,

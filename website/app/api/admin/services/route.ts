@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const products = await Product.find().sort({ createdAt: -1 });
     return NextResponse.json(products);
@@ -18,6 +25,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const body = await request.json();
     

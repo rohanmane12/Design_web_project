@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
-import { Eye, Trash2, CheckCircle, Clock, Mail, Phone, User } from 'lucide-react';
+import { Eye, Trash2, Mail, Phone, User } from 'lucide-react';
 
 interface Enquiry {
   _id: string;

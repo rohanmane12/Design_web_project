@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const { id } = await params;
     const product = await Product.findById(id);
@@ -30,29 +37,37 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const { id } = await params;
     const body = await request.json();
-    
-    const product = await Product.findByIdAndUpdate(
-      id,
-      {
-        name: body.name,
-        description: body.description,
-        category: body.category,
-        images: body.images,
-        customizationOptions: body.customizationOptions,
-        basePrice: body.basePrice,
-        featured: body.featured,
-        active: body.active,
-      },
-      { new: true, runValidators: true }
-    );
-    
-    if (!product) {
+
+    const existingProduct = await Product.findById(id);
+
+    if (!existingProduct) {
       return NextResponse.json({ error: 'Service not found' }, { status: 404 });
     }
-    
+
+    const updatePayload = {
+      name: body.name ?? existingProduct.name,
+      description: body.description ?? existingProduct.description,
+      category: body.category ?? existingProduct.category,
+      images: body.images ?? existingProduct.images,
+      customizationOptions: body.customizationOptions ?? existingProduct.customizationOptions,
+      basePrice: body.basePrice ?? existingProduct.basePrice,
+      featured: body.featured ?? existingProduct.featured,
+      active: body.active ?? existingProduct.active,
+    };
+
+    const product = await Product.findByIdAndUpdate(id, updatePayload, {
+      new: true,
+      runValidators: true,
+    });
     return NextResponse.json(product);
   } catch (error) {
     console.error('Error updating service:', error);
@@ -68,6 +83,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
     const { id } = await params;
     

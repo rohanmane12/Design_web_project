@@ -31,7 +31,7 @@ export default function AdminSettings() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/admin/settings/change-password', {
+      const res = await fetch('/api/admin/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -48,7 +48,7 @@ export default function AdminSettings() {
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to update password' });
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
@@ -182,7 +182,7 @@ export default function AdminSettings() {
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-              Don't reuse passwords from other accounts
+              Do not reuse passwords from other accounts
             </li>
           </ul>
         </div>

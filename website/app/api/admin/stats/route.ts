@@ -3,9 +3,16 @@ import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
 import Portfolio from '@/models/Portfolio';
 import Enquiry from '@/models/Enquiry';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectDB();
 
     const [totalServices, totalPortfolio, totalEnquiries] = await Promise.all([

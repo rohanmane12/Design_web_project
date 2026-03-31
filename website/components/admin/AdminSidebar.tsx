@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard,
@@ -23,9 +23,13 @@ const navItems = [
 
 export default function AdminSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const params = useParams();
+  const locale = typeof params.locale === 'string' ? params.locale : 'en';
+
+  const withLocale = (href: string) => `/${locale}${href}`;
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/en/admin/login' });
+    await signOut({ callbackUrl: withLocale('/admin/login') });
   };
 
   return (
@@ -49,12 +53,13 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
         <nav className="p-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const localizedHref = withLocale(item.href);
+            const isActive = pathname === localizedHref || pathname.startsWith(`${localizedHref}/`);
             
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={localizedHref}
                 className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
                   isActive
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'

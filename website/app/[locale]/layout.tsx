@@ -2,8 +2,8 @@ import '../globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { locales, Locale } from '@/i18n';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import LocaleChrome from '@/components/LocaleChrome';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -26,11 +26,9 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages} locale={locale} timeZone="Asia/Kolkata">
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">{children}</main>
-        <Footer locale={locale as Locale} />
-      </div>
+      <LocaleChrome footer={<Footer locale={locale as Locale} />}>
+        {children}
+      </LocaleChrome>
     </NextIntlClientProvider>
   );
 }
