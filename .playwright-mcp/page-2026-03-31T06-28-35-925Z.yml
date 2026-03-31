@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]: D
+      - heading "Admin Panel" [level=1] [ref=e7]
+      - paragraph [ref=e8]: Design Concept
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - heading "Sign In" [level=2] [ref=e11]
+        - paragraph [ref=e12]: Enter your credentials to access the admin panel
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e15]: Email Address
+          - generic [ref=e16]:
+            - img [ref=e18]
+            - textbox "admin@designconcept.com" [ref=e21]
+        - generic [ref=e22]:
+          - generic [ref=e23]: Password
+          - generic [ref=e24]:
+            - img [ref=e26]
+            - textbox "••••••••" [ref=e29]
+        - button "Sign In" [ref=e30]:
+          - text: Sign In
+          - img [ref=e31]
+    - paragraph [ref=e34]: Protected by secure authentication
+  - button "Open Next.js Dev Tools" [ref=e40] [cursor=pointer]:
+    - img [ref=e41]

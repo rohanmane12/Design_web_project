@@ -1,0 +1,178 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - link "D Design Concept" [ref=e5] [cursor=pointer]:
+          - /url: /hi/home
+          - generic [ref=e6]: D
+          - generic [ref=e7]: Design Concept
+        - generic [ref=e8]:
+          - link "होम" [ref=e9] [cursor=pointer]:
+            - /url: /hi/home
+          - link "सेवाएं" [ref=e10] [cursor=pointer]:
+            - /url: /hi/services
+          - link "हमारे बारे में" [ref=e11] [cursor=pointer]:
+            - /url: /hi/about
+          - link "संपर्क करें" [ref=e12] [cursor=pointer]:
+            - /url: /hi/contact
+          - generic [ref=e13]:
+            - button "English" [ref=e14]
+            - button "हिन्दी" [ref=e15]
+            - button "मराठी" [ref=e16]
+          - link "कोटेशन मांगें" [ref=e17] [cursor=pointer]:
+            - /url: /hi/request-quote
+    - main [ref=e18]:
+      - main [ref=e19]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]:
+              - generic [ref=e24]: कोटेशन मांगें
+              - heading "कोटेशन का अनुरोध करें" [level=1] [ref=e25]
+              - paragraph [ref=e26]: अपना विवरण भरें और हम आपको एक कस्टम कोटेशन के साथ संपर्क करेंगे
+            - generic [ref=e27]:
+              - generic [ref=e28]:
+                - generic [ref=e29]:
+                  - img [ref=e31]
+                  - heading "24 ???? ??? ????" [level=2] [ref=e34]
+                  - paragraph [ref=e35]: "??????? ???????? ?? ??? ?????? ?? ??? ?????? ????????????"
+                - generic [ref=e36]:
+                  - img [ref=e38]
+                  - heading "???? ?????" [level=2] [ref=e41]
+                  - paragraph [ref=e42]: "???? ??????? ?? ?????? ??????? ???????? ??? ???? ???"
+                - generic [ref=e43]:
+                  - img [ref=e45]
+                  - heading "????? ?????????" [level=2] [ref=e48]
+                  - paragraph [ref=e49]: "???? ??????, ????? ?? ???? ?? ?????? ?????? ???? ???? ???"
+              - generic [ref=e50]:
+                - heading "???? ????? ????" [level=2] [ref=e51]
+                - list [ref=e52]:
+                  - listitem [ref=e53]: "??? ?????? ?? ???? ?? ????? ?? ??? ???? ?????"
+                  - listitem [ref=e54]: "??? ??? ?? ?? ??????, ????, ??????? ?? ????? ??????"
+                  - listitem [ref=e55]: "??? ??????? ?? ??? PDF ??????? ????? ?????? ?????"
+              - generic [ref=e56]:
+                - heading "???? ?????? ??????" [level=2] [ref=e57]
+                - generic [ref=e58]:
+                  - paragraph [ref=e59]:
+                    - img [ref=e61]
+                    - generic [ref=e65]: +91 77098 31071
+                  - paragraph [ref=e66]:
+                    - img [ref=e68]
+                    - generic [ref=e71]: info@designconcept.com
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - generic [ref=e76]:
+                  - heading "व्यक्तिगत जानकारी" [level=2] [ref=e77]
+                  - paragraph [ref=e78]: "?? ???? ????? ???? ?????? ????? ?? ????????? ????? ?? ?????? ???? ?? ??? ???? ????"
+                - generic [ref=e79]:
+                  - generic [ref=e80]:
+                    - generic [ref=e81]: पूरा नाम*
+                    - textbox "पूरा नाम*" [ref=e82]:
+                      - /placeholder: अपना पूरा नाम दर्ज करें
+                  - generic [ref=e83]:
+                    - generic [ref=e84]:
+                      - generic [ref=e85]: फोन नंबर*
+                      - textbox "फोन नंबर*" [ref=e86]:
+                        - /placeholder: अपना फोन नंबर दर्ज करें
+                    - generic [ref=e87]:
+                      - generic [ref=e88]: ईमेल पता*
+                      - textbox "ईमेल पता*" [ref=e89]:
+                        - /placeholder: अपना ईमेल पता दर्ज करें
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - heading "कस्टमाइजेशन विवरण" [level=2] [ref=e92]
+                  - paragraph [ref=e93]: "?? ???????????? ???? ??? ??? ?? ????? ????? ?? ?? ???????? ?????? ???? ???? ???? ????"
+                - generic [ref=e94]:
+                  - generic [ref=e95]:
+                    - generic [ref=e96]: उत्पाद/सेवा चुनें*
+                    - combobox "उत्पाद/सेवा चुनें*" [ref=e97]:
+                      - option "उत्पाद/सेवा चुनें" [selected]
+                      - option "व्यक्तिगत डिजाइन"
+                      - option "एक्रिलिक नाम प्लेट"
+                      - option "LED साइनेज"
+                      - option "स्टैंडीज"
+                      - option "सभी प्रकार के स्टिकर"
+                      - option "बड़े होर्डिंग्स"
+                      - option "बैनर (ब्रांचर्स)"
+                  - generic [ref=e98]:
+                    - generic [ref=e99]:
+                      - generic [ref=e100]: आकार
+                      - textbox "आकार" [ref=e101]:
+                        - /placeholder: A4, 24x36 ???, ?????
+                    - generic [ref=e102]:
+                      - generic [ref=e103]: सामग्री
+                      - textbox "सामग्री" [ref=e104]:
+                        - /placeholder: "????????, ??????, ???"
+                  - generic [ref=e105]:
+                    - generic [ref=e106]: मात्रा
+                    - spinbutton "मात्रा" [ref=e107]: "1"
+                  - generic [ref=e108]:
+                    - generic [ref=e109]: अतिरिक्त नोट्स
+                    - textbox "अतिरिक्त नोट्स" [ref=e110]:
+                      - /placeholder: कोई विशिष्ट आवश्यकता का वर्णन करें...
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - heading "डिजाइन फ़ाइल अपलोड करें" [level=2] [ref=e113]
+                  - paragraph [ref=e114]: अपनी डिजाइन फ़ाइल अपलोड करें (केवल PDF, अधिकतम 10MB)
+                - generic [ref=e116] [cursor=pointer]:
+                  - img [ref=e118]
+                  - generic [ref=e121]: अपनी फ़ाइल यहाँ खींचें और छोड़ें, या ब्राउज़ करने के लिए क्लिक करें
+                  - generic [ref=e122]: "???? PDF, ?????? 10MB"
+            - generic [ref=e124]:
+              - paragraph [ref=e125]: "????? ?? ??? ???? ?????? WhatsApp ?????? ???? ?? ??? ????????? ????? ???? ??? ?????"
+              - button "जमा करें" [ref=e126]:
+                - text: जमा करें
+                - img [ref=e127]
+    - contentinfo [ref=e130]:
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e135]:
+              - generic [ref=e137]: D
+              - generic [ref=e138]: Design Concept
+            - paragraph [ref=e139]: Professional printing and design solutions for businesses and individuals.
+          - generic [ref=e140]:
+            - heading "Quick Links" [level=4] [ref=e141]
+            - list [ref=e142]:
+              - listitem [ref=e143]:
+                - link "Home" [ref=e144] [cursor=pointer]:
+                  - /url: /hi/home
+              - listitem [ref=e145]:
+                - link "Services" [ref=e146] [cursor=pointer]:
+                  - /url: /hi/services
+              - listitem [ref=e147]:
+                - link "About Us" [ref=e148] [cursor=pointer]:
+                  - /url: /hi/about
+              - listitem [ref=e149]:
+                - link "Contact Us" [ref=e150] [cursor=pointer]:
+                  - /url: /hi/contact
+          - generic [ref=e151]:
+            - heading "Services" [level=4] [ref=e152]
+            - list [ref=e153]:
+              - listitem [ref=e154]:
+                - link "Personal Designs" [ref=e155] [cursor=pointer]:
+                  - /url: /hi/services?category=personal
+              - listitem [ref=e156]:
+                - link "Acrylic Name Plates" [ref=e157] [cursor=pointer]:
+                  - /url: /hi/services?category=acrylic
+              - listitem [ref=e158]:
+                - link "LED Signages" [ref=e159] [cursor=pointer]:
+                  - /url: /hi/services?category=led
+              - listitem [ref=e160]:
+                - link "Stickers" [ref=e161] [cursor=pointer]:
+                  - /url: /hi/services?category=stickers
+          - generic [ref=e162]:
+            - heading "Contact" [level=4] [ref=e163]
+            - list [ref=e164]:
+              - listitem [ref=e165]:
+                - img [ref=e166]
+                - generic [ref=e169]: Mumbai, Maharashtra, India
+              - listitem [ref=e170]:
+                - img [ref=e171]
+                - generic [ref=e173]: +91 77098 31071
+              - listitem [ref=e174]:
+                - img [ref=e175]
+                - generic [ref=e178]: info@designconcept.com
+        - paragraph [ref=e180]: © 2026 Design Concept. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e186] [cursor=pointer]:
+    - img [ref=e187]

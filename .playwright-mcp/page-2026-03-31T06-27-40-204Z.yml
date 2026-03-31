@@ -1,0 +1,178 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - link "D Design Concept" [ref=e5] [cursor=pointer]:
+          - /url: /en/home
+          - generic [ref=e6]: D
+          - generic [ref=e7]: Design Concept
+        - generic [ref=e8]:
+          - link "Home" [ref=e9] [cursor=pointer]:
+            - /url: /en/home
+          - link "Services" [ref=e10] [cursor=pointer]:
+            - /url: /en/services
+          - link "About Us" [ref=e11] [cursor=pointer]:
+            - /url: /en/about
+          - link "Contact Us" [ref=e12] [cursor=pointer]:
+            - /url: /en/contact
+          - generic [ref=e13]:
+            - button "English" [ref=e14]
+            - button "हिन्दी" [ref=e15]
+            - button "मराठी" [ref=e16]
+          - link "Request Quote" [ref=e17] [cursor=pointer]:
+            - /url: /en/request-quote
+    - main [ref=e18]:
+      - main [ref=e19]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]:
+              - generic [ref=e24]: Request Quote
+              - heading "Request a Quote" [level=1] [ref=e25]
+              - paragraph [ref=e26]: Fill in your details and we'll get back to you with a custom quote
+            - generic [ref=e27]:
+              - generic [ref=e28]:
+                - generic [ref=e29]:
+                  - img [ref=e31]
+                  - heading "24h response" [level=2] [ref=e34]
+                  - paragraph [ref=e35]: Clear quote turnaround for most requests.
+                - generic [ref=e36]:
+                  - img [ref=e38]
+                  - heading "Private details" [level=2] [ref=e41]
+                  - paragraph [ref=e42]: Files and contact information stay protected.
+                - generic [ref=e43]:
+                  - img [ref=e45]
+                  - heading "Custom pricing" [level=2] [ref=e48]
+                  - paragraph [ref=e49]: Quoted for your quantity, finish, and size.
+              - generic [ref=e50]:
+                - heading "What to include" [level=2] [ref=e51]
+                - list [ref=e52]:
+                  - listitem [ref=e53]: Share the product or service you need.
+                  - listitem [ref=e54]: Mention quantity, size, material, or finish if known.
+                  - listitem [ref=e55]: Attach a PDF design file for faster review.
+              - generic [ref=e56]:
+                - heading "Need direct support?" [level=2] [ref=e57]
+                - generic [ref=e58]:
+                  - paragraph [ref=e59]:
+                    - img [ref=e61]
+                    - generic [ref=e65]: +91 77098 31071
+                  - paragraph [ref=e66]:
+                    - img [ref=e68]
+                    - generic [ref=e71]: info@designconcept.com
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - generic [ref=e76]:
+                  - heading "Personal Information" [level=2] [ref=e77]
+                  - paragraph [ref=e78]: We use this to send your quote and confirm project details.
+                - generic [ref=e79]:
+                  - generic [ref=e80]:
+                    - generic [ref=e81]: Full Name*
+                    - textbox "Full Name*" [ref=e82]:
+                      - /placeholder: Enter your full name
+                  - generic [ref=e83]:
+                    - generic [ref=e84]:
+                      - generic [ref=e85]: Phone Number*
+                      - textbox "Phone Number*" [ref=e86]:
+                        - /placeholder: Enter your phone number
+                    - generic [ref=e87]:
+                      - generic [ref=e88]: Email Address*
+                      - textbox "Email Address*" [ref=e89]:
+                        - /placeholder: Enter your email address
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - heading "Customization Details" [level=2] [ref=e92]
+                  - paragraph [ref=e93]: Add the specifications you already know. Leave optional fields blank if needed.
+                - generic [ref=e94]:
+                  - generic [ref=e95]:
+                    - generic [ref=e96]: Select Product/Service*
+                    - combobox "Select Product/Service*" [ref=e97]:
+                      - option "Select Product/Service" [selected]
+                      - option "Personal Designs"
+                      - option "Acrylic Name Plates"
+                      - option "LED Signages"
+                      - option "Standees"
+                      - option "All Types of Stickers"
+                      - option "Large Hoardings"
+                      - option "Banners (Branchers)"
+                  - generic [ref=e98]:
+                    - generic [ref=e99]:
+                      - generic [ref=e100]: Size
+                      - textbox "Size" [ref=e101]:
+                        - /placeholder: A4, 24x36 in, custom
+                    - generic [ref=e102]:
+                      - generic [ref=e103]: Material
+                      - textbox "Material" [ref=e104]:
+                        - /placeholder: Acrylic, vinyl, matte
+                  - generic [ref=e105]:
+                    - generic [ref=e106]: Quantity
+                    - spinbutton "Quantity" [ref=e107]: "1"
+                  - generic [ref=e108]:
+                    - generic [ref=e109]: Additional Notes
+                    - textbox "Additional Notes" [ref=e110]:
+                      - /placeholder: Describe any specific requirements...
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - heading "Upload Design File" [level=2] [ref=e113]
+                  - paragraph [ref=e114]: Upload your design file (PDF only, max 10MB)
+                - generic [ref=e116] [cursor=pointer]:
+                  - img [ref=e118]
+                  - generic [ref=e121]: Drag & drop your file here, or click to browse
+                  - generic [ref=e122]: PDF only, max 10MB
+            - generic [ref=e124]:
+              - paragraph [ref=e125]: Your request will open WhatsApp after submission so you can send the same project details directly.
+              - button "Submit" [ref=e126]:
+                - text: Submit
+                - img [ref=e127]
+    - contentinfo [ref=e130]:
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e135]:
+              - generic [ref=e137]: D
+              - generic [ref=e138]: Design Concept
+            - paragraph [ref=e139]: Professional printing and design solutions for businesses and individuals.
+          - generic [ref=e140]:
+            - heading "Quick Links" [level=4] [ref=e141]
+            - list [ref=e142]:
+              - listitem [ref=e143]:
+                - link "Home" [ref=e144] [cursor=pointer]:
+                  - /url: /en/home
+              - listitem [ref=e145]:
+                - link "Services" [ref=e146] [cursor=pointer]:
+                  - /url: /en/services
+              - listitem [ref=e147]:
+                - link "About Us" [ref=e148] [cursor=pointer]:
+                  - /url: /en/about
+              - listitem [ref=e149]:
+                - link "Contact Us" [ref=e150] [cursor=pointer]:
+                  - /url: /en/contact
+          - generic [ref=e151]:
+            - heading "Services" [level=4] [ref=e152]
+            - list [ref=e153]:
+              - listitem [ref=e154]:
+                - link "Personal Designs" [ref=e155] [cursor=pointer]:
+                  - /url: /en/services?category=personal
+              - listitem [ref=e156]:
+                - link "Acrylic Name Plates" [ref=e157] [cursor=pointer]:
+                  - /url: /en/services?category=acrylic
+              - listitem [ref=e158]:
+                - link "LED Signages" [ref=e159] [cursor=pointer]:
+                  - /url: /en/services?category=led
+              - listitem [ref=e160]:
+                - link "Stickers" [ref=e161] [cursor=pointer]:
+                  - /url: /en/services?category=stickers
+          - generic [ref=e162]:
+            - heading "Contact" [level=4] [ref=e163]
+            - list [ref=e164]:
+              - listitem [ref=e165]:
+                - img [ref=e166]
+                - generic [ref=e169]: Mumbai, Maharashtra, India
+              - listitem [ref=e170]:
+                - img [ref=e171]
+                - generic [ref=e173]: +91 77098 31071
+              - listitem [ref=e174]:
+                - img [ref=e175]
+                - generic [ref=e178]: info@designconcept.com
+        - paragraph [ref=e180]: © 2026 Design Concept. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e186] [cursor=pointer]:
+    - img [ref=e187]
