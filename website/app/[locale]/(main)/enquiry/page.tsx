@@ -4,24 +4,35 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
-  Send,
-  Upload,
-  FileText,
-  X,
+  BadgeDollarSign,
   CheckCircle,
   Clock3,
-  ShieldCheck,
-  BadgeDollarSign,
+  FileText,
   Mail,
   PhoneCall,
+  Send,
+  ShieldCheck,
+  Upload,
+  X,
 } from 'lucide-react';
 import { Locale } from '@/i18n';
+
+const servicesKeys = [
+  'personal',
+  'acrylic',
+  'led',
+  'standees',
+  'stickers',
+  'hoardings',
+  'banners',
+] as const;
 
 export default function EnquiryPage() {
   const t = useTranslations();
   const router = useRouter();
   const params = useParams();
   const currentLocale = (params.locale as Locale) || 'en';
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -37,26 +48,43 @@ export default function EnquiryPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = t('validation.required');
-    if (!formData.phone.trim()) newErrors.phone = t('validation.required');
-    if (!formData.email.trim()) {
-      newErrors.email = t('validation.required');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = t('validation.invalidEmail');
-    }
-    if (!formData.service) newErrors.service = t('validation.required');
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const services = [
+    { value: '', label: t('enquiry.selectProduct') },
+    ...servicesKeys.map((key) => ({
+      value: key,
+      label: t(`services.categories.${key}`),
+    })),
+  ];
+
+  const updateField = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validate = () => {
+    const nextErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) nextErrors.name = t('validation.required');
+    if (!formData.phone.trim()) nextErrors.phone = t('validation.required');
+
+    if (!formData.email.trim()) {
+      nextErrors.email = t('validation.required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      nextErrors.email = t('validation.invalidEmail');
+    }
+
+    if (!formData.service) nextErrors.service = t('validation.required');
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!validate()) return;
 
     setSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSubmitted(true);
 
     const message = `
@@ -74,189 +102,173 @@ Notes: ${formData.notes}
     setTimeout(() => {
       window.open(`https://wa.me/917709831071?text=${encodeURIComponent(message)}`, '_blank');
       router.push(`/${currentLocale}/home`);
-    }, 2000);
+    }, 1800);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.type !== 'application/pdf') {
-        setErrors(prev => ({ ...prev, file: t('validation.invalidFileType') }));
-        return;
-      }
-      if (selectedFile.size > 10 * 1024 * 1024) {
-        setErrors(prev => ({ ...prev, file: t('validation.fileTooLarge') }));
-        return;
-      }
-      setFile(selectedFile);
-      setErrors(prev => ({ ...prev, file: '' }));
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.type !== 'application/pdf') {
+      setErrors((prev) => ({ ...prev, file: t('validation.invalidFileType') }));
+      return;
     }
+
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, file: t('validation.fileTooLarge') }));
+      return;
+    }
+
+    setFile(selectedFile);
+    setErrors((prev) => ({ ...prev, file: '' }));
   };
 
-  const services = [
-    { value: '', label: t('enquiry.selectProduct') },
-    { value: 'personal', label: t('services.categories.personal') },
-    { value: 'acrylic', label: t('services.categories.acrylic') },
-    { value: 'led', label: t('services.categories.led') },
-    { value: 'standees', label: t('services.categories.standees') },
-    { value: 'stickers', label: t('services.categories.stickers') },
-    { value: 'hoardings', label: t('services.categories.hoardings') },
-    { value: 'banners', label: t('services.categories.banners') },
-  ];
+  const inputClass = (field?: string) =>
+    [
+      'w-full rounded-2xl border px-4 py-3.5 text-sm text-slate-900 transition',
+      'placeholder:text-slate-400 focus:outline-none focus:ring-4',
+      field && errors[field]
+        ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
+        : 'border-slate-200 bg-white hover:border-slate-300 focus:border-sky-500 focus:ring-sky-100',
+    ].join(' ');
 
   if (submitted) {
     return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-600" />
+      <main className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef4ff_100%)] px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-xl rounded-[2rem] border border-sky-100 bg-white p-8 text-center shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-12">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
+            <CheckCircle className="h-10 w-10 text-emerald-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('enquiry.submitSuccess')}</h2>
-          <p className="text-gray-600 mb-6">{t('enquiry.whatsappRedirect')}</p>
+          <h1 className="mb-3 text-3xl font-semibold tracking-tight text-slate-950">
+            {t('enquiry.submitSuccess')}
+          </h1>
+          <p className="text-base text-slate-600">{t('enquiry.whatsappRedirect')}</p>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 py-8">
-      {/* Main Container - Using Tailwind only */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Mobile Header - Hidden on desktop */}
-        <div className="lg:hidden mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('enquiry.title')}</h1>
-          <p className="text-gray-600">{t('enquiry.subtitle')}</p>
-        </div>
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#f3f6fb_45%,#ffffff_100%)]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start">
+          <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 text-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
+            <div className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.35),_transparent_35%),linear-gradient(135deg,#0f172a_0%,#111827_58%,#1d4ed8_100%)] px-6 py-10 sm:px-8 sm:py-12">
+              <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-sky-100">
+                {t('common.enquiry')}
+              </span>
+              <h1 className="mt-5 max-w-md text-4xl font-semibold tracking-tight sm:text-5xl">
+                {t('enquiry.title')}
+              </h1>
+              <p className="mt-4 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">
+                {t('enquiry.subtitle')}
+              </p>
+            </div>
 
-        {/* Grid Layout: 5 columns total, left gets 3, right gets 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
-          
-          {/* Left Section - Form (col-span-3) */}
-          <div className="lg:col-span-3">
-            <form onSubmit={handleSubmit}>
-              {/* Form Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                
-                {/* Personal Information Section */}
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
+            <div className="space-y-6 px-6 py-8 sm:px-8">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <InfoTile
+                  icon={<Clock3 className="h-5 w-5 text-sky-300" />}
+                  title={t('enquiry.responseTitle')}
+                  description={t('enquiry.responseDesc')}
+                />
+                <InfoTile
+                  icon={<ShieldCheck className="h-5 w-5 text-emerald-300" />}
+                  title={t('enquiry.privacyTitle')}
+                  description={t('enquiry.privacyDesc')}
+                />
+                <InfoTile
+                  icon={<BadgeDollarSign className="h-5 w-5 text-amber-300" />}
+                  title={t('enquiry.pricingTitle')}
+                  description={t('enquiry.pricingDesc')}
+                />
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+                  {t('enquiry.includeTitle')}
+                </h2>
+                <ul className="mt-4 space-y-3 text-sm text-slate-200">
+                  <li>{t('enquiry.includePoint1')}</li>
+                  <li>{t('enquiry.includePoint2')}</li>
+                  <li>{t('enquiry.includePoint3')}</li>
+                </ul>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+                  {t('enquiry.supportTitle')}
+                </h2>
+                <div className="mt-4 space-y-3 text-sm text-slate-100">
+                  <p className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
+                      <PhoneCall className="h-4 w-4" />
                     </span>
-                    {t('enquiry.personalInfo')}
-                  </h2>
+                    <span>+91 77098 31071</span>
+                  </p>
+                  <p className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
+                      <Mail className="h-4 w-4" />
+                    </span>
+                    <span>info@designconcept.com</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
 
-                  <div className="space-y-4">
-                    {/* Full Name */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        {t('enquiry.name')} <span className="text-red-500">*</span>
-                      </label>
+          <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid gap-8">
+                <FormSection
+                  title={t('enquiry.personalInfo')}
+                  description={t('enquiry.personalInfoDesc')}
+                >
+                  <div className="grid gap-4">
+                    <Field label={t('enquiry.name')} required error={errors.name}>
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className={`w-full px-4 py-3 rounded-xl border-2 outline-none transition-all ${
-                          errors.name
-                            ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-100'
-                            : 'border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
-                        }`}
+                        onChange={(event) => updateField('name', event.target.value)}
                         placeholder={t('enquiry.namePlaceholder')}
+                        className={inputClass('name')}
                       />
-                      {errors.name && (
-                        <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
-                          </svg>
-                          {errors.name}
-                        </p>
-                      )}
-                    </div>
+                    </Field>
 
-                    {/* Phone & Email - Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          {t('enquiry.phone')} <span className="text-red-500">*</span>
-                        </label>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label={t('enquiry.phone')} required error={errors.phone}>
                         <input
                           type="tel"
                           value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className={`w-full px-4 py-3 rounded-xl border-2 outline-none transition-all ${
-                            errors.phone
-                              ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-100'
-                              : 'border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
-                          }`}
+                          onChange={(event) => updateField('phone', event.target.value)}
                           placeholder={t('enquiry.phonePlaceholder')}
+                          className={inputClass('phone')}
                         />
-                        {errors.phone && (
-                          <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
-                            </svg>
-                            {errors.phone}
-                          </p>
-                        )}
-                      </div>
+                      </Field>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          {t('enquiry.email')} <span className="text-red-500">*</span>
-                        </label>
+                      <Field label={t('enquiry.email')} required error={errors.email}>
                         <input
                           type="email"
                           value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className={`w-full px-4 py-3 rounded-xl border-2 outline-none transition-all ${
-                            errors.email
-                              ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-100'
-                              : 'border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
-                          }`}
+                          onChange={(event) => updateField('email', event.target.value)}
                           placeholder={t('enquiry.emailPlaceholder')}
+                          className={inputClass('email')}
                         />
-                        {errors.email && (
-                          <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
-                            </svg>
-                            {errors.email}
-                          </p>
-                        )}
-                      </div>
+                      </Field>
                     </div>
                   </div>
-                </div>
+                </FormSection>
 
-                {/* Customization Details Section */}
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </span>
-                    {t('enquiry.customization')}
-                  </h2>
-
-                  <div className="space-y-4">
-                    {/* Service Selection */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        {t('enquiry.selectProduct')} <span className="text-red-500">*</span>
-                      </label>
+                <FormSection
+                  title={t('enquiry.customization')}
+                  description={t('enquiry.customizationDesc')}
+                >
+                  <div className="grid gap-4">
+                    <Field label={t('enquiry.selectProduct')} required error={errors.service}>
                       <select
                         value={formData.service}
-                        onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                        className={`w-full px-4 py-3 rounded-xl border-2 outline-none transition-all appearance-none bg-white ${
-                          errors.service
-                            ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-100'
-                            : 'border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
-                        }`}
+                        onChange={(event) => updateField('service', event.target.value)}
+                        className={inputClass('service')}
                       >
                         {services.map((service) => (
                           <option key={service.value} value={service.value}>
@@ -264,102 +276,64 @@ Notes: ${formData.notes}
                           </option>
                         ))}
                       </select>
-                      {errors.service && (
-                        <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
-                          </svg>
-                          {errors.service}
-                        </p>
-                      )}
-                    </div>
+                    </Field>
 
-                    {/* Size & Material - Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          {t('enquiry.size')}
-                        </label>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label={t('enquiry.size')}>
                         <input
                           type="text"
                           value={formData.size}
-                          onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                          placeholder="A4, A3, Custom"
+                          onChange={(event) => updateField('size', event.target.value)}
+                          placeholder={t('enquiry.sizePlaceholder')}
+                          className={inputClass()}
                         />
-                      </div>
+                      </Field>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          {t('enquiry.material')}
-                        </label>
+                      <Field label={t('enquiry.material')}>
                         <input
                           type="text"
                           value={formData.material}
-                          onChange={(e) => setFormData({ ...formData, material: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                          placeholder="Matte, Glossy"
+                          onChange={(event) => updateField('material', event.target.value)}
+                          placeholder={t('enquiry.materialPlaceholder')}
+                          className={inputClass()}
                         />
-                      </div>
+                      </Field>
                     </div>
 
-                    {/* Quantity */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        {t('enquiry.quantity')}
-                      </label>
+                    <Field label={t('enquiry.quantity')}>
                       <input
                         type="number"
                         min="1"
                         value={formData.quantity}
-                        onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
+                        onChange={(event) => updateField('quantity', event.target.value)}
+                        className={inputClass()}
                       />
-                    </div>
+                    </Field>
 
-                    {/* Additional Notes */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        {t('enquiry.notes')}
-                      </label>
+                    <Field label={t('enquiry.notes')}>
                       <textarea
                         value={formData.notes}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                        rows={4}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none"
+                        onChange={(event) => updateField('notes', event.target.value)}
+                        rows={5}
                         placeholder={t('enquiry.notesPlaceholder')}
+                        className={`${inputClass()} resize-y`}
                       />
-                    </div>
+                    </Field>
                   </div>
-                </div>
+                </FormSection>
 
-                {/* File Upload Section */}
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
-                    </span>
-                    {t('enquiry.uploadDesign')}
-                  </h2>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-3">
-                      {t('enquiry.uploadDesignDesc')}
-                    </label>
-
+                <FormSection
+                  title={t('enquiry.uploadDesign')}
+                  description={t('enquiry.uploadDesignDesc')}
+                >
+                  <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-4">
                     {!file ? (
-                      <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                            <Upload className="w-8 h-8 text-white" />
-                          </div>
-                          <p className="text-sm font-semibold text-gray-700 mb-1">
-                            Drag & drop your file here, or click to browse
-                          </p>
-                          <p className="text-xs text-gray-500">PDF only, max 10MB</p>
-                        </div>
+                      <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.25rem] border border-white bg-white px-6 py-10 text-center transition hover:border-sky-200 hover:bg-sky-50">
+                        <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                          <Upload className="h-8 w-8" />
+                        </span>
+                        <span className="text-base font-medium text-slate-900">{t('enquiry.dragDrop')}</span>
+                        <span className="mt-2 text-sm text-slate-500">{t('enquiry.pdfLimit')}</span>
                         <input
                           type="file"
                           accept=".pdf,application/pdf"
@@ -368,125 +342,129 @@ Notes: ${formData.notes}
                         />
                       </label>
                     ) : (
-                      <div className="flex items-center justify-between p-4 border-2 border-blue-200 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <FileText className="w-7 h-7 text-white" />
-                          </div>
+                      <div className="flex flex-col gap-4 rounded-[1.25rem] border border-sky-100 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-4">
+                          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                            <FileText className="h-7 w-7" />
+                          </span>
                           <div>
-                            <p className="text-sm font-semibold text-gray-900">{file.name}</p>
-                            <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <p className="font-medium text-slate-900">{file.name}</p>
+                            <p className="text-sm text-slate-500">
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => setFile(null)}
-                          className="p-2.5 hover:bg-red-100 rounded-xl transition-colors"
+                          className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
                         >
-                          <X className="w-5 h-5 text-gray-500 hover:text-red-600" />
+                          <X className="mr-2 h-4 w-4" />
+                          {t('enquiry.removeFile')}
                         </button>
                       </div>
                     )}
 
-                    {errors.file && (
-                      <p className="mt-2 text-sm text-red-500 flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
-                        </svg>
-                        {errors.file}
-                      </p>
-                    )}
+                    {errors.file && <ErrorText message={errors.file} />}
                   </div>
-                </div>
+                </FormSection>
+              </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center"
-                >
-                  {submitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      {t('common.loading')}
-                    </>
-                  ) : (
-                    <>
-                      {t('common.submit')}
-                      <Send className="ml-2 w-5 h-5" />
-                    </>
-                  )}
-                </button>
+              <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 sm:p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="max-w-xl text-sm leading-6 text-slate-600">
+                    {t('enquiry.whatsappNote')}
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {submitting ? (
+                      <>
+                        <span className="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        {t('common.loading')}
+                      </>
+                    ) : (
+                      <>
+                        {t('common.submit')}
+                        <Send className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
-          </div>
-
-          {/* Right Section - Info Card (col-span-2) */}
-          <div className="lg:col-span-2">
-            {/* Info Cards - Sticky on desktop */}
-            <div className="lg:sticky lg:top-6 space-y-4">
-              {/* Title Card */}
-              <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('enquiry.title')}</h1>
-                <p className="text-gray-600">{t('enquiry.subtitle')}</p>
-              </div>
-
-              {/* Quick Response */}
-              <div className="bg-white p-5 rounded-2xl shadow-md border border-blue-100 flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <Clock3 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-base mb-1">Quick Response</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">We'll get back to you within 24 hours with a custom quote</p>
-                </div>
-              </div>
-
-              {/* Secure & Private */}
-              <div className="bg-white p-5 rounded-2xl shadow-md border border-green-100 flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <ShieldCheck className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-base mb-1">Secure & Private</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">Your information is kept confidential and secure</p>
-                </div>
-              </div>
-
-              {/* Best Pricing */}
-              <div className="bg-white p-5 rounded-2xl shadow-md border border-purple-100 flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-fuchsia-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <BadgeDollarSign className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-base mb-1">Best Pricing</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">Competitive rates with no hidden charges</p>
-                </div>
-              </div>
-
-              {/* Contact Info Card */}
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-2xl shadow-lg text-white">
-                <h3 className="font-bold text-lg mb-3">Need Help?</h3>
-                <div className="space-y-2.5 text-gray-300">
-                  <p className="flex items-center gap-3">
-                    <span className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <PhoneCall className="w-4 h-4" />
-                    </span>
-                    <span className="text-sm">+91 77098 31071</span>
-                  </p>
-                  <p className="flex items-center gap-3">
-                    <span className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-4 h-4" />
-                    </span>
-                    <span className="text-sm">info@designconcept.com</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          </section>
         </div>
       </div>
+    </main>
+  );
+}
+
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-[1.75rem] border border-slate-200 p-5 sm:p-6">
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold tracking-tight text-slate-950">{title}</h2>
+        <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Field({
+  label,
+  required,
+  error,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-slate-700">
+        {label}
+        {required ? <span className="ml-1 text-red-500">*</span> : null}
+      </span>
+      {children}
+      {error ? <ErrorText message={error} /> : null}
+    </label>
+  );
+}
+
+function ErrorText({ message }: { message: string }) {
+  return <p className="mt-2 text-sm text-red-600">{message}</p>;
+}
+
+function InfoTile({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-[1.5rem] border border-white/10 bg-white/6 p-4">
+      <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
+        {icon}
+      </span>
+      <h2 className="text-sm font-semibold text-white">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-300">{description}</p>
     </div>
   );
 }
