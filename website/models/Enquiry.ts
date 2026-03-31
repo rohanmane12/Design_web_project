@@ -48,8 +48,31 @@ const EnquirySchema = new Schema<IEnquiry>(
       default: 'pending',
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
+
+// Add default for customization
+EnquirySchema.set('toJSON', {
+  transform: function(doc, ret) {
+    if (!ret.customization) {
+      ret.customization = {};
+    }
+    return ret;
+  }
+});
+
+EnquirySchema.set('toObject', {
+  transform: function(doc, ret) {
+    if (!ret.customization) {
+      ret.customization = {};
+    }
+    return ret;
+  }
+});
 
 const Enquiry: Model<IEnquiry> =
   mongoose.models.Enquiry || mongoose.model<IEnquiry>('Enquiry', EnquirySchema);

@@ -46,8 +46,31 @@ const ProductSchema = new Schema<IProduct>(
     featured: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
+
+// Add default for customizationOptions
+ProductSchema.set('toJSON', {
+  transform: function(doc, ret) {
+    if (!ret.customizationOptions) {
+      ret.customizationOptions = { sizes: [], materials: [] };
+    }
+    return ret;
+  }
+});
+
+ProductSchema.set('toObject', {
+  transform: function(doc, ret) {
+    if (!ret.customizationOptions) {
+      ret.customizationOptions = { sizes: [], materials: [] };
+    }
+    return ret;
+  }
+});
 
 const Product: Model<IProduct> =
   mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);

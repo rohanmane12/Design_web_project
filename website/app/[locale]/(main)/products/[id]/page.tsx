@@ -223,7 +223,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     {t('product.selectSize')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {product.customizationOptions.sizes.map((size) => (
+                    {product.customizationOptions?.sizes?.map((size) => (
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
@@ -247,7 +247,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     {t('product.selectMaterial')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {product.customizationOptions.materials.map((material) => (
+                    {product.customizationOptions?.materials?.map((material) => (
                       <button
                         key={material}
                         onClick={() => setSelectedMaterial(material)}

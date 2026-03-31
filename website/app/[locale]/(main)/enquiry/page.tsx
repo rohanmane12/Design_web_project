@@ -122,17 +122,18 @@ Notes: ${formData.notes}
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 py-8">
       {/* Main Container - Using Tailwind only */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Mobile Header - Hidden on desktop */}
+        <div className="lg:hidden mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('enquiry.title')}</h1>
+          <p className="text-gray-600">{t('enquiry.subtitle')}</p>
+        </div>
+
         {/* Grid Layout: 5 columns total, left gets 3, right gets 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
           
           {/* Left Section - Form (col-span-3) */}
           <div className="lg:col-span-3">
-            {/* Mobile Header */}
-            <div className="mb-6 lg:hidden">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('enquiry.title')}</h1>
-              <p className="text-gray-600">{t('enquiry.subtitle')}</p>
-            </div>
-
             <form onSubmit={handleSubmit}>
               {/* Form Card */}
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
@@ -422,64 +423,62 @@ Notes: ${formData.notes}
 
           {/* Right Section - Info Card (col-span-2) */}
           <div className="lg:col-span-2">
-            {/* Desktop Header - Hidden on mobile */}
-            <div className="hidden lg:block mb-6">
-              <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">{t('enquiry.title')}</h1>
-                <p className="text-gray-600 text-lg">{t('enquiry.subtitle')}</p>
-              </div>
-            </div>
-
             {/* Info Cards - Sticky on desktop */}
             <div className="lg:sticky lg:top-6 space-y-4">
+              {/* Title Card */}
+              <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('enquiry.title')}</h1>
+                <p className="text-gray-600">{t('enquiry.subtitle')}</p>
+              </div>
+
               {/* Quick Response */}
-              <div className="bg-white p-6 rounded-2xl shadow-md border border-blue-100 flex gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <Clock3 className="w-7 h-7 text-white" />
+              <div className="bg-white p-5 rounded-2xl shadow-md border border-blue-100 flex gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <Clock3 className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-1">Quick Response</h3>
-                  <p className="text-gray-600 leading-relaxed">We'll get back to you within 24 hours with a custom quote</p>
+                  <h3 className="font-bold text-gray-900 text-base mb-1">Quick Response</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">We'll get back to you within 24 hours with a custom quote</p>
                 </div>
               </div>
 
               {/* Secure & Private */}
-              <div className="bg-white p-6 rounded-2xl shadow-md border border-green-100 flex gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-green-600 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <ShieldCheck className="w-7 h-7 text-white" />
+              <div className="bg-white p-5 rounded-2xl shadow-md border border-green-100 flex gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <ShieldCheck className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-1">Secure & Private</h3>
-                  <p className="text-gray-600 leading-relaxed">Your information is kept confidential and secure</p>
+                  <h3 className="font-bold text-gray-900 text-base mb-1">Secure & Private</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">Your information is kept confidential and secure</p>
                 </div>
               </div>
 
               {/* Best Pricing */}
-              <div className="bg-white p-6 rounded-2xl shadow-md border border-purple-100 flex gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-fuchsia-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <BadgeDollarSign className="w-7 h-7 text-white" />
+              <div className="bg-white p-5 rounded-2xl shadow-md border border-purple-100 flex gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-fuchsia-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <BadgeDollarSign className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-1">Best Pricing</h3>
-                  <p className="text-gray-600 leading-relaxed">Competitive rates with no hidden charges</p>
+                  <h3 className="font-bold text-gray-900 text-base mb-1">Best Pricing</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">Competitive rates with no hidden charges</p>
                 </div>
               </div>
 
               {/* Contact Info Card */}
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-2xl shadow-lg text-white">
-                <h3 className="font-bold text-xl mb-4">Need Help?</h3>
-                <div className="space-y-3 text-gray-300">
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-5 rounded-2xl shadow-lg text-white">
+                <h3 className="font-bold text-lg mb-3">Need Help?</h3>
+                <div className="space-y-2.5 text-gray-300">
                   <p className="flex items-center gap-3">
-                    <span className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <PhoneCall className="w-5 h-5" />
+                    <span className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <PhoneCall className="w-4 h-4" />
                     </span>
-                    +91 77098 31071
+                    <span className="text-sm">+91 77098 31071</span>
                   </p>
                   <p className="flex items-center gap-3">
-                    <span className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5" />
+                    <span className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-4 h-4" />
                     </span>
-                    info@designconcept.com
+                    <span className="text-sm">info@designconcept.com</span>
                   </p>
                 </div>
               </div>
