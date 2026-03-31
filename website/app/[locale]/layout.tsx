@@ -25,7 +25,7 @@ export default async function LocaleLayout({
   const messages = (await import(`../../messages/${locale}.json`)).default;
 
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
+    <NextIntlClientProvider messages={messages} locale={locale} timeZone="Asia/Kolkata">
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-grow">{children}</main>

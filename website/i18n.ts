@@ -11,8 +11,8 @@ export const localeNames: Record<Locale, string> = {
 
 export default getRequestConfig(async ({ locale }) => {
   // Ensure locale is valid
-  const validLocale = (locale && locales.includes(locale as Locale)) 
-    ? (locale as Locale) 
+  const validLocale = (locale && locales.includes(locale as Locale))
+    ? (locale as Locale)
     : 'en';
 
   const messages = await import(`./messages/${validLocale}.json`).then(mod => mod.default);

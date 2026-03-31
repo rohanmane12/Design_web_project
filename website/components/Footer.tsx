@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { Locale } from '@/i18n';
 
@@ -7,8 +7,8 @@ interface FooterProps {
   locale: Locale;
 }
 
-export default function Footer({ locale }: FooterProps) {
-  const t = useTranslations();
+export default async function Footer({ locale }: FooterProps) {
+  const t = await getTranslations();
 
   const quickLinks = [
     { href: '/home', label: t('common.home') },
