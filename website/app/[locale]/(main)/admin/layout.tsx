@@ -14,10 +14,10 @@ export default function AdminLayout({
   const params = useParams();
   const locale = typeof params.locale === 'string' ? params.locale : 'en';
   const [status, setStatus] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
-  const isLoginPage = pathname?.includes('/admin/login');
+  const isAuthPage = pathname?.includes('/admin/login') || pathname?.includes('/admin/signup');
 
   useEffect(() => {
-    if (isLoginPage) {
+    if (isAuthPage) {
       return;
     }
 
@@ -43,9 +43,9 @@ export default function AdminLayout({
     return () => {
       active = false;
     };
-  }, [isLoginPage, locale, router]);
+  }, [isAuthPage, locale, router]);
 
-  if (isLoginPage) {
+  if (isAuthPage) {
     return <>{children}</>;
   }
 

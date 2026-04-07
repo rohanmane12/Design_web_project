@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Lock, Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { AlertCircle, ArrowRight, Lock, Mail } from 'lucide-react';
 import type { Locale } from '@/i18n';
 
 export default function AdminLoginPage() {
@@ -40,97 +41,98 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="text-white font-bold text-2xl">D</span>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(0,102,204,0.16),_transparent_32%),linear-gradient(180deg,#f6f9fc_0%,#eef4fb_100%)] px-4 py-10">
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="rounded-[32px] bg-[#004B87] p-8 text-white shadow-[0_24px_70px_rgba(0,75,135,0.22)] lg:p-12">
+          <div className="inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/75">
+            Design Concept Admin
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-600 mt-2">Design Concept</p>
-        </div>
+          <h1 className="mt-6 max-w-lg text-4xl font-bold leading-tight lg:text-5xl">
+            Run the site from a workspace built for daily operations.
+          </h1>
+          <p className="mt-5 max-w-xl text-base leading-7 text-white/78">
+            Review enquiries, update services, publish portfolio work, and keep the storefront current without touching the public pages directly.
+          </p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-3xl border border-white/10 bg-white/8 p-5">
+              <p className="text-sm font-semibold">Services</p>
+              <p className="mt-2 text-sm text-white/72">Add or update product listings and visibility.</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/8 p-5">
+              <p className="text-sm font-semibold">Portfolio</p>
+              <p className="mt-2 text-sm text-white/72">Publish completed work with rich visuals.</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/8 p-5">
+              <p className="text-sm font-semibold">Enquiries</p>
+              <p className="mt-2 text-sm text-white/72">Track inbound requests and move them to closure.</p>
+            </div>
+          </div>
+        </section>
 
-        {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Sign In</h2>
-            <p className="text-gray-600 text-sm mt-1">Enter your credentials to access the admin panel</p>
+        <section className="rounded-[32px] border border-white/70 bg-white/90 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur lg:p-10">
+          <div className="mb-8">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#004B87] text-2xl font-bold text-white shadow-[0_16px_35px_rgba(0,75,135,0.22)]">
+              D
+            </div>
+            <h2 className="mt-6 text-3xl font-bold text-[#12314f]">Sign in</h2>
+            <p className="mt-2 text-sm leading-6 text-[#6a7b91]">Use your admin credentials to open the control room.</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="mb-6 flex items-start gap-3 rounded-2xl border border-[#f7c6c1] bg-[#fff3f1] p-4">
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#b42318]" />
+              <p className="text-sm text-[#912018]">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
+              <label className="mb-2 block text-sm font-semibold text-[#12314f]">Email address</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Mail className="w-5 h-5" />
-                </div>
+                <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6a7b91]" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
+                  className="w-full rounded-2xl border border-[#d8e2ee] bg-white px-12 py-3.5 outline-none transition-all focus:border-[#0066CC] focus:ring-4 focus:ring-[#0066CC]/10"
                   placeholder="admin@designconcept.com"
                   required
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="mb-2 block text-sm font-semibold text-[#12314f]">Password</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Lock className="w-5 h-5" />
-                </div>
+                <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6a7b91]" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                  placeholder="••••••••"
+                  className="w-full rounded-2xl border border-[#d8e2ee] bg-white px-12 py-3.5 outline-none transition-all focus:border-[#0066CC] focus:ring-4 focus:ring-[#0066CC]/10"
+                  placeholder="Enter your password"
                   required
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FF6600] px-6 py-3.5 font-semibold text-white shadow-[0_18px_35px_rgba(255,102,0,0.22)] transition-all hover:bg-[#E55C00] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  Sign In
-                  <CheckCircle className="ml-2 w-5 h-5" />
-                </>
-              )}
+              {loading ? 'Signing in...' : 'Open admin'}
+              {!loading && <ArrowRight className="h-5 w-5" />}
             </button>
           </form>
-        </div>
 
-        {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Protected by secure authentication
-        </p>
+          <div className="mt-6 flex items-center justify-between gap-4 border-t border-[#e7edf4] pt-6 text-sm text-[#6a7b91]">
+            <p>Need a first admin account?</p>
+            <Link href={`/${locale}/admin/signup`} className="font-semibold text-[#004B87] no-underline hover:text-[#0066CC]">
+              Create admin
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );

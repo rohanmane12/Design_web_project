@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 export async function requireAdminSession() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email || session.user.role !== 'admin') {
+  if (!session?.user?.email || !['admin', 'super-admin'].includes(session.user.role)) {
     return null;
   }
 

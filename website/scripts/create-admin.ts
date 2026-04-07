@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
+import { loadEnvConfig } from '@next/env';
 import Admin from '../models/Admin';
+
+loadEnvConfig(process.cwd());
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

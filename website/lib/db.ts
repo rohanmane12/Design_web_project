@@ -26,12 +26,19 @@ export async function connectDB() {
     throw new Error('MONGODB_URI environment variable is not defined');
   }
 
+  console.log('🔍 Using MongoDB URI:', MONGODB_URI.substring(0, 50) + '...');
+
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+      // Add these options to help with connection issues
+      family: 4 // Force IPv4 instead of IPv6
+    }).then((mongoose) => {
       console.log('✅ Connected to MongoDB');
       return mongoose;
     });

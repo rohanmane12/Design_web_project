@@ -51,7 +51,7 @@ export async function PUT(
       id,
       {
         status: body.status,
-        notes: body.notes,
+        adminNotes: body.adminNotes,
       },
       { new: true, runValidators: true }
     );
