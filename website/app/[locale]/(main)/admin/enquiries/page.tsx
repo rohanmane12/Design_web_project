@@ -24,6 +24,7 @@ interface Enquiry {
 }
 
 const filters = ['all', 'pending', 'contacted', 'completed', 'cancelled'] as const;
+const statusOptions = filters.slice(1) as Enquiry['status'][];
 const statusTone: Record<Enquiry['status'], string> = {
   pending: 'bg-[#fff2e8] text-[#c2410c]',
   contacted: 'bg-[#e8f2ff] text-[#1d4ed8]',
@@ -208,7 +209,7 @@ export default function AdminEnquiries() {
               <div className="rounded-[24px] border border-[#d8e2ee] p-5">
                 <p className="text-sm font-semibold text-[#12314f]">Update status</p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {filters.slice(1).map((status) => (
+                  {statusOptions.map((status) => (
                     <button key={status} onClick={() => void updateEnquiry(selectedEnquiry._id, { status })} className={`rounded-full px-4 py-2 text-sm font-semibold capitalize transition-colors ${selectedEnquiry.status === status ? 'bg-[#004B87] text-white' : 'bg-[#eef3f8] text-[#51657c] hover:bg-[#e1e8ef]'}`}>
                       {status}
                     </button>
