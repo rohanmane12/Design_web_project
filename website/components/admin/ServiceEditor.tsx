@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowLeft, Save, Upload, X } from 'lucide-react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -292,7 +293,7 @@ export default function ServiceEditor({ mode, serviceId }: ServiceEditorProps) {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             {existingImages.map((image, index) => (
               <div key={`${image}-${index}`} className="relative aspect-square overflow-hidden rounded-xl border border-gray-200">
-                <img src={image} alt={`Existing service ${index + 1}`} className="h-full w-full object-cover" />
+                <Image src={image} alt={`Existing service ${index + 1}`} fill className="object-cover" sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 50vw" />
                 <button type="button" onClick={() => removeExistingImage(index)} className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600">
                   <X className="h-4 w-4" />
                 </button>
@@ -300,7 +301,7 @@ export default function ServiceEditor({ mode, serviceId }: ServiceEditorProps) {
             ))}
             {newImagePreviews.map((image, index) => (
               <div key={`${image}-${index}`} className="relative aspect-square overflow-hidden rounded-xl border border-gray-200">
-                <img src={image} alt={`New service ${index + 1}`} className="h-full w-full object-cover" />
+                <Image src={image} alt={`New service ${index + 1}`} fill className="object-cover" sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 50vw" />
                 <button type="button" onClick={() => removeNewImage(index)} className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white hover:bg-red-600">
                   <X className="h-4 w-4" />
                 </button>

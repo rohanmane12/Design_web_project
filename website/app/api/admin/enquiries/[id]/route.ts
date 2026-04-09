@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createAuditLog } from '@/lib/audit-log';
 import { connectDB } from '@/lib/db';
 import Enquiry from '@/models/Enquiry';
 import { requireAdminSession } from '@/lib/admin-auth';
@@ -46,6 +47,11 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const body = await request.json();
+    const previousEnquiry = await Enquiry.findById(id);
+
+    if (!previousEnquiry) {
+      return NextResponse.json({ error: 'Enquiry not found' }, { status: 404 });
+    }
     
     const enquiry = await Enquiry.findByIdAndUpdate(
       id,
@@ -59,6 +65,21 @@ export async function PUT(
     if (!enquiry) {
       return NextResponse.json({ error: 'Enquiry not found' }, { status: 404 });
     }
+
+    await createAuditLog({
+      actorEmail: session.user.email,
+      actorRole: session.user.role as 'admin' | 'super-admin',
+      action: 'enquiry.update',
+      entityType: 'enquiry',
+      entityId: enquiry._id.toString(),
+      entityLabel: enquiry.email || enquiry.name,
+      details: {
+        previousStatus: previousEnquiry.status,
+        newStatus: enquiry.status,
+        previousAdminNotes: previousEnquiry.adminNotes || '',
+        newAdminNotes: enquiry.adminNotes || '',
+      },
+    });
     
     return NextResponse.json(enquiry);
   } catch (error) {
@@ -89,6 +110,18 @@ export async function DELETE(
     if (!enquiry) {
       return NextResponse.json({ error: 'Enquiry not found' }, { status: 404 });
     }
+
+    await createAuditLog({
+      actorEmail: session.user.email,
+      actorRole: session.user.role as 'admin' | 'super-admin',
+      action: 'enquiry.delete',
+      entityType: 'enquiry',
+      entityId: enquiry._id.toString(),
+      entityLabel: enquiry.email || enquiry.name,
+      details: {
+        status: enquiry.status,
+      },
+    });
     
     return NextResponse.json({ message: 'Enquiry deleted successfully' });
   } catch (error) {

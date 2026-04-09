@@ -2,7 +2,9 @@ import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { connectDB } from './db';
+import { getReadableAuthError } from './auth-errors';
 import Admin from '@/models/Admin';
+import { assertRateLimit, buildRateLimitKey, getClientIp } from './rate-limit';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,30 +14,53 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password are required');
         }
 
-        await connectDB();
-        const admin = await Admin.findOne({ email: credentials.email });
+        try {
+          const ipAddress = getClientIp(request.headers);
+          const rateLimitKey = buildRateLimitKey('admin-login', credentials.email, ipAddress);
+          const rateLimitResult = assertRateLimit(rateLimitKey, 5, 5 * 60 * 1000);
 
-        if (!admin) {
-          throw new Error('Invalid email or password');
+          if (!rateLimitResult.allowed) {
+            throw new Error('Too many login attempts. Please try again later.');
+          }
+
+          await connectDB();
+          const admin = await Admin.findOne({ email: credentials.email });
+
+          if (!admin) {
+            throw new Error('Invalid email or password');
+          }
+
+          const isValid = await bcrypt.compare(credentials.password as string, admin.passwordHash);
+
+          if (!isValid) {
+            throw new Error('Invalid email or password');
+          }
+
+          return {
+            id: admin._id.toString(),
+            email: admin.email,
+            role: admin.role,
+            name: admin.email
+          };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : '';
+
+          if (
+            errorMessage.includes('querySrv') ||
+            errorMessage.includes('ECONNREFUSED') ||
+            errorMessage.includes('ENOTFOUND') ||
+            errorMessage.includes('MongoServerSelectionError')
+          ) {
+            throw new Error('Database connection error. Please try again later.');
+          }
+
+          throw new Error(getReadableAuthError(errorMessage));
         }
-
-        const isValid = await bcrypt.compare(credentials.password as string, admin.passwordHash);
-
-        if (!isValid) {
-          throw new Error('Invalid email or password');
-        }
-
-        return {
-          id: admin._id.toString(),
-          email: admin.email,
-          role: admin.role,
-          name: admin.email
-        };
       }
     })
   ],

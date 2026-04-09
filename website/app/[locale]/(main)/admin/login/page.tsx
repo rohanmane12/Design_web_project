@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { AlertCircle, ArrowRight, Lock, Mail } from 'lucide-react';
 import type { Locale } from '@/i18n';
+import { getReadableAuthError } from '@/lib/auth-errors';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -31,10 +32,10 @@ export default function AdminLoginPage() {
       if (result?.ok) {
         router.push(`/${locale}/admin`);
       } else {
-        setError('Invalid email or password');
+        setError(getReadableAuthError(result?.error));
       }
     } catch {
-      setError('An error occurred. Please try again.');
+      setError('Unable to sign in right now. Please try again.');
     } finally {
       setLoading(false);
     }

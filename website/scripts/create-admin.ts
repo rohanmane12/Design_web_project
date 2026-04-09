@@ -1,9 +1,11 @@
 import bcrypt from 'bcryptjs';
+import dns from 'node:dns';
 import mongoose from 'mongoose';
 import { loadEnvConfig } from '@next/env';
 import Admin from '../models/Admin';
 
 loadEnvConfig(process.cwd());
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

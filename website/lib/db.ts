@@ -1,6 +1,10 @@
+import dns from 'node:dns';
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const PUBLIC_DNS_SERVERS = ['8.8.8.8', '1.1.1.1'];
+
+dns.setServers(PUBLIC_DNS_SERVERS);
 
 if (!MONGODB_URI) {
   console.warn('⚠️ MONGODB_URI is not defined. Database features will be disabled.');
@@ -37,10 +41,19 @@ export async function connectDB() {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
       // Add these options to help with connection issues
-      family: 4 // Force IPv4 instead of IPv6
+      family: 4, // Force IPv4 instead of IPv6
+      // Try to work around DNS SRV issues
+      appName: 'design-concept-app'
     }).then((mongoose) => {
       console.log('✅ Connected to MongoDB');
       return mongoose;
+    }).catch((error) => {
+      console.error('❌ MongoDB connection error:', error.message);
+      console.log('💡 If you see ECONNREFUSED, try:');
+      console.log('   1. Use a standard mongodb:// connection string instead of mongodb+srv://');
+      console.log('   2. Check MongoDB Atlas Network Access settings');
+      console.log('   3. Try a different network (your network may block SRV DNS queries)');
+      throw error;
     });
   }
 

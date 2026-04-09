@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle, Lock, Mail, User } from 'lucide-react';
 import type { Locale } from '@/i18n';
+import { getReadableSignupError } from '@/lib/auth-errors';
 
 export default function AdminSignupPage() {
   const router = useRouter();
@@ -58,10 +59,10 @@ export default function AdminSignupPage() {
           router.push(`/${locale}/admin/login`);
         }, 2000);
       } else {
-        setError(data.error || 'An error occurred');
+        setError(getReadableSignupError(data.error));
       }
     } catch {
-      setError('An error occurred. Please try again.');
+      setError('Unable to create the account right now. Please try again.');
     } finally {
       setLoading(false);
     }

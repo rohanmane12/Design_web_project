@@ -5,6 +5,7 @@ import { useParams, usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import {
+  Activity,
   ChevronRight,
   ExternalLink,
   Image,
@@ -14,6 +15,7 @@ import {
   Menu,
   Package,
   PanelLeftClose,
+  Shield,
   Settings,
 } from 'lucide-react';
 
@@ -22,6 +24,8 @@ const navItems = [
   { href: '/admin/services', label: 'Services', icon: Package },
   { href: '/admin/portfolio', label: 'Portfolio', icon: Image },
   { href: '/admin/enquiries', label: 'Enquiries', icon: Mail },
+  { href: '/admin/users', label: 'Admins', icon: Shield },
+  { href: '/admin/audit-logs', label: 'Audit Logs', icon: Activity },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 

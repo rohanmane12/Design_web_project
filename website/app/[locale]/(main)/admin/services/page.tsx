@@ -3,8 +3,9 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { Edit, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { Edit, Eye, EyeOff, Plus, Search, Trash2 } from 'lucide-react';
 
 interface Service {
   _id: string;
@@ -23,6 +24,10 @@ export default function AdminServices() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'visible' | 'hidden'>('all');
+  const [featuredFilter, setFeaturedFilter] = useState<'all' | 'featured' | 'standard'>('all');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -41,6 +46,26 @@ export default function AdminServices() {
 
   const featuredCount = useMemo(() => services.filter((service) => service.featured).length, [services]);
   const visibleCount = useMemo(() => services.filter((service) => service.active).length, [services]);
+  const filteredServices = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return services.filter((service) => {
+      const matchesSearch =
+        !query ||
+        [service.name.en, service.category]
+          .join(' ')
+          .toLowerCase()
+          .includes(query);
+      const matchesVisibility =
+        visibilityFilter === 'all' ||
+        (visibilityFilter === 'visible' ? service.active : !service.active);
+      const matchesFeatured =
+        featuredFilter === 'all' ||
+        (featuredFilter === 'featured' ? service.featured : !service.featured);
+
+      return matchesSearch && matchesVisibility && matchesFeatured;
+    });
+  }, [featuredFilter, search, services, visibilityFilter]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this service?')) return;
@@ -54,6 +79,38 @@ export default function AdminServices() {
     } finally {
       setDeleting(null);
     }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  };
+
+  const handleBulkUpdate = async (payload: Partial<Pick<Service, 'active' | 'featured'>>) => {
+    const targetServices = services.filter((service) => selectedIds.includes(service._id));
+    await Promise.all(
+      targetServices.map((service) =>
+        fetch(`/api/admin/services/${service._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      )
+    );
+
+    setServices((current) =>
+      current.map((service) =>
+        selectedIds.includes(service._id) ? { ...service, ...payload } : service
+      )
+    );
+    setSelectedIds([]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length || !confirm(`Delete ${selectedIds.length} selected services?`)) return;
+
+    await Promise.all(selectedIds.map((id) => fetch(`/api/admin/services/${id}`, { method: 'DELETE' })));
+    setServices((current) => current.filter((service) => !selectedIds.includes(service._id)));
+    setSelectedIds([]);
   };
 
   const toggleActive = async (service: Service) => {
@@ -106,11 +163,44 @@ export default function AdminServices() {
         </button>
       </section>
 
+      <section className="grid gap-3 rounded-[28px] border border-[#d8e2ee] bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.05)] lg:grid-cols-[1.15fr_0.4fr_0.4fr]">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6a7b91]" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-2xl border border-[#d8e2ee] bg-white px-11 py-3 text-sm outline-none transition-colors focus:border-[#004B87]"
+            placeholder="Search by service name or category"
+          />
+        </div>
+        <select value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value as typeof visibilityFilter)} className="rounded-2xl border border-[#d8e2ee] bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-[#004B87]">
+          <option value="all">All visibility</option>
+          <option value="visible">Visible only</option>
+          <option value="hidden">Hidden only</option>
+        </select>
+        <select value={featuredFilter} onChange={(e) => setFeaturedFilter(e.target.value as typeof featuredFilter)} className="rounded-2xl border border-[#d8e2ee] bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-[#004B87]">
+          <option value="all">All featured states</option>
+          <option value="featured">Featured only</option>
+          <option value="standard">Standard only</option>
+        </select>
+      </section>
+
       <section className="grid gap-4 md:grid-cols-3">
         <SummaryCard label="Total services" value={services.length} />
         <SummaryCard label="Visible on site" value={visibleCount} />
         <SummaryCard label="Featured entries" value={featuredCount} />
       </section>
+
+      {selectedIds.length > 0 && (
+        <section className="flex flex-wrap items-center gap-3 rounded-[24px] border border-[#d8e2ee] bg-white px-6 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <p className="text-sm font-semibold text-[#12314f]">{selectedIds.length} selected</p>
+          <button onClick={() => void handleBulkUpdate({ active: true })} className="rounded-full bg-[#eefaf1] px-4 py-2 text-sm font-semibold text-[#107948]">Mark visible</button>
+          <button onClick={() => void handleBulkUpdate({ active: false })} className="rounded-full bg-[#f4f6f8] px-4 py-2 text-sm font-semibold text-[#51657c]">Mark hidden</button>
+          <button onClick={() => void handleBulkUpdate({ featured: true })} className="rounded-full bg-[#12314f] px-4 py-2 text-sm font-semibold text-white">Mark featured</button>
+          <button onClick={() => void handleBulkUpdate({ featured: false })} className="rounded-full bg-[#eef3f8] px-4 py-2 text-sm font-semibold text-[#51657c]">Remove featured</button>
+          <button onClick={() => void handleBulkDelete()} className="rounded-full bg-[#fff1ef] px-4 py-2 text-sm font-semibold text-[#b42318]">Delete selected</button>
+        </section>
+      )}
 
       {services.length === 0 ? (
         <div className="rounded-[28px] border border-dashed border-[#d8e2ee] bg-white px-6 py-16 text-center shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
@@ -118,14 +208,25 @@ export default function AdminServices() {
           <p className="mt-2 text-sm text-[#6a7b91]">Create the first service to start populating the catalog.</p>
           <button onClick={() => router.push(`/${locale}/admin/services/new`)} className="mt-6 rounded-2xl bg-[#004B87] px-5 py-3 font-semibold text-white transition-colors hover:bg-[#003b6c]">Add service</button>
         </div>
+      ) : filteredServices.length === 0 ? (
+        <div className="rounded-[28px] border border-dashed border-[#d8e2ee] bg-white px-6 py-16 text-center shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <h3 className="text-xl font-bold text-[#12314f]">No services match these filters</h3>
+          <p className="mt-2 text-sm text-[#6a7b91]">Try clearing the search or filter settings to see more catalog items.</p>
+          <button onClick={() => { setSearch(''); setVisibilityFilter('all'); setFeaturedFilter('all'); }} className="mt-6 rounded-2xl bg-[#004B87] px-5 py-3 font-semibold text-white transition-colors hover:bg-[#003b6c]">Reset filters</button>
+        </div>
       ) : (
         <section className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-          {services.map((service) => (
+          {filteredServices.map((service) => (
             <article key={service._id} className="overflow-hidden rounded-[28px] border border-[#d8e2ee] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
               <div className="relative h-56 bg-[#e9eef5]">
-                {service.images?.[0] ? <img src={service.images[0]} alt={service.name.en} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-sm font-medium text-[#6a7b91]">No image uploaded</div>}
+                {service.images?.[0] ? <Image src={service.images[0]} alt={service.name.en} fill className="object-cover" sizes="(min-width: 1536px) 33vw, (min-width: 768px) 50vw, 100vw" /> : <div className="flex h-full items-center justify-center text-sm font-medium text-[#6a7b91]">No image uploaded</div>}
                 <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
-                  <span className="rounded-full bg-white/92 px-3 py-1 text-xs font-semibold capitalize text-[#12314f] shadow-sm">{service.category}</span>
+                  <div className="flex items-center gap-2">
+                    <label className="flex h-8 w-8 items-center justify-center rounded-full bg-white/92 shadow-sm">
+                      <input type="checkbox" checked={selectedIds.includes(service._id)} onChange={() => toggleSelect(service._id)} className="h-4 w-4" />
+                    </label>
+                    <span className="rounded-full bg-white/92 px-3 py-1 text-xs font-semibold capitalize text-[#12314f] shadow-sm">{service.category}</span>
+                  </div>
                   {service.featured && <span className="rounded-full bg-[#12314f] px-3 py-1 text-xs font-semibold text-white">Featured</span>}
                 </div>
               </div>

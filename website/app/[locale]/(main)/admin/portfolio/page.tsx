@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { Edit, Plus, Star, Trash2 } from 'lucide-react';
 
@@ -109,7 +110,7 @@ export default function AdminPortfolio() {
           {portfolio.map((item) => (
             <article key={item._id} className="overflow-hidden rounded-[28px] border border-[#d8e2ee] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
               <div className="relative h-56 bg-[#e9eef5]">
-                {item.images?.[0] ? <img src={item.images[0]} alt={item.title.en} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-sm font-medium text-[#6a7b91]">No image uploaded</div>}
+                {item.images?.[0] ? <Image src={item.images[0]} alt={item.title.en} fill className="object-cover" sizes="(min-width: 1536px) 33vw, (min-width: 768px) 50vw, 100vw" /> : <div className="flex h-full items-center justify-center text-sm font-medium text-[#6a7b91]">No image uploaded</div>}
                 <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
                   <span className="rounded-full bg-white/92 px-3 py-1 text-xs font-semibold capitalize text-[#12314f] shadow-sm">{item.category}</span>
                   {item.featured && <span className="inline-flex items-center gap-1 rounded-full bg-[#12314f] px-3 py-1 text-xs font-semibold text-white"><Star className="h-3.5 w-3.5 fill-current" />Featured</span>}

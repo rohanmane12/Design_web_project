@@ -19,6 +19,14 @@ export interface IEnquiry extends Document {
   fileUrl?: string;
   fileName?: string;
   adminNotes?: string;
+  analytics?: {
+    source?: string;
+    referrer?: string;
+    landingPage?: string;
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+  };
   status: 'pending' | 'contacted' | 'completed' | 'cancelled';
   createdAt: Date;
   updatedAt: Date;
@@ -44,6 +52,14 @@ const EnquirySchema = new Schema<IEnquiry>(
     fileUrl: { type: String },
     fileName: { type: String },
     adminNotes: { type: String },
+    analytics: {
+      source: { type: String },
+      referrer: { type: String },
+      landingPage: { type: String },
+      utmSource: { type: String },
+      utmMedium: { type: String },
+      utmCampaign: { type: String },
+    },
     status: {
       type: String,
       enum: ['pending', 'contacted', 'completed', 'cancelled'],

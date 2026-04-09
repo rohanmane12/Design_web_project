@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Check, ChevronRight } from 'lucide-react';
@@ -159,12 +160,14 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
           <div>
-            <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
+            <div className="relative aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
               {product.images && product.images.length > 0 ? (
-                <img
+                <Image
                   src={product.images[selectedImage]}
                   alt={getName(product.name)}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-6xl">
@@ -178,13 +181,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-video rounded-lg overflow-hidden border-2 transition-colors ${
+                    className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-colors ${
                       selectedImage === index
                         ? 'border-blue-600'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <img src={image} alt="" className="w-full h-full object-cover" />
+                    <Image src={image} alt="" fill className="object-cover" sizes="(min-width: 1024px) 12vw, 25vw" />
                   </button>
                 ))}
               </div>

@@ -3,11 +3,13 @@ import bcrypt from 'bcryptjs';
 import { connectDB } from '@/lib/db';
 import Admin from '@/models/Admin';
 import { requireAdminSession } from '@/lib/admin-auth';
+import { assertRateLimit, buildRateLimitKey, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { email, password, name } = body;
+    const ipAddress = getClientIp(request.headers);
 
     // Validation
     if (!email || !password) {
@@ -31,6 +33,16 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Password must be at least 6 characters long' },
         { status: 400 }
+      );
+    }
+
+    const rateLimitKey = buildRateLimitKey('admin-signup', email, ipAddress);
+    const rateLimitResult = assertRateLimit(rateLimitKey, 3, 5 * 60 * 1000);
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Too many signup attempts. Please try again later.' },
+        { status: 429 }
       );
     }
 
@@ -83,7 +95,13 @@ export async function POST(request: Request) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     // Check if it's a database connection error
-    if (errorMessage.includes('ECONNREFUSED') || errorMessage.includes('MongoServerError')) {
+    if (
+      errorMessage.includes('querySrv') ||
+      errorMessage.includes('ECONNREFUSED') ||
+      errorMessage.includes('ENOTFOUND') ||
+      errorMessage.includes('MongoServerError') ||
+      errorMessage.includes('MongoServerSelectionError')
+    ) {
       return NextResponse.json(
         { error: 'Database connection error. Please try again later.' },
         { status: 500 }

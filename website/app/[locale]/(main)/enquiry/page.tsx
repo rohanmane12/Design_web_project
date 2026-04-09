@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -47,14 +47,76 @@ export default function EnquiryPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [prefillProductId, setPrefillProductId] = useState<string>('');
+  const [prefillProductName, setPrefillProductName] = useState<{ en: string; hi: string; mr: string } | null>(null);
 
-  const services = [
-    { value: '', label: t('enquiry.selectProduct') },
-    ...servicesKeys.map((key) => ({
-      value: key,
-      label: t(`services.categories.${key}`),
-    })),
-  ];
+  const services = useMemo(
+    () => [
+      { value: '', label: t('enquiry.selectProduct') },
+      ...servicesKeys.map((key) => ({
+        value: key,
+        label: t(`services.categories.${key}`),
+      })),
+    ],
+    [t]
+  );
+
+  const selectedServiceLabel = useMemo(
+    () => services.find((service) => service.value === formData.service)?.label || formData.service,
+    [formData.service, services]
+  );
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('enquiryData');
+    if (!stored) return;
+
+    try {
+      const data = JSON.parse(stored) as {
+        productId?: string;
+        productName?: { en?: string; hi?: string; mr?: string };
+        customization?: { size?: string; material?: string; quantity?: number; notes?: string };
+      };
+
+      setPrefillProductId(data.productId || '');
+      if (data.productName?.en || data.productName?.hi || data.productName?.mr) {
+        setPrefillProductName({
+          en: data.productName.en || data.productName.hi || data.productName.mr || '',
+          hi: data.productName.hi || data.productName.en || data.productName.mr || '',
+          mr: data.productName.mr || data.productName.en || data.productName.hi || '',
+        });
+      }
+
+      setFormData((current) => ({
+        ...current,
+        service: current.service || data.productName?.en || current.service,
+        size: current.size || data.customization?.size || '',
+        material: current.material || data.customization?.material || '',
+        quantity: current.quantity || data.customization?.quantity?.toString() || '1',
+        notes: current.notes || data.customization?.notes || '',
+      }));
+    } catch (error) {
+      console.error('Error loading enquiry prefill:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const trackingKey = `${window.location.pathname}${window.location.search}`;
+    if (sessionStorage.getItem(`tracked:${trackingKey}`)) return;
+
+    sessionStorage.setItem(`tracked:${trackingKey}`, '1');
+    void fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventType: 'request_quote_view',
+        path: window.location.pathname,
+        currentUrl: window.location.href,
+        referrer: document.referrer || undefined,
+        productId: prefillProductId || undefined,
+        productName: prefillProductName?.en || undefined,
+      }),
+    });
+  }, [prefillProductId, prefillProductName]);
 
   const updateField = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -84,25 +146,92 @@ export default function EnquiryPage() {
     if (!validate()) return;
 
     setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setSubmitted(true);
 
-    const message = `
+    try {
+      let fileUrl = '';
+      let fileName = '';
+
+      if (file) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error('File upload failed');
+        }
+
+        const uploadedFile = await uploadRes.json();
+        fileUrl = uploadedFile.secure_url || uploadedFile.url || '';
+        fileName = file.name;
+      }
+
+      const productName = prefillProductName || {
+        en: selectedServiceLabel,
+        hi: selectedServiceLabel,
+        mr: selectedServiceLabel,
+      };
+
+      const enquiryPayload = {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        productId: prefillProductId || undefined,
+        productName,
+        customization: {
+          size: formData.size || undefined,
+          material: formData.material || undefined,
+          quantity: Number(formData.quantity) || 1,
+          notes: formData.notes || undefined,
+        },
+        fileUrl: fileUrl || undefined,
+        fileName: fileName || undefined,
+        analytics: {
+          landingPage: window.location.href,
+          referrer: document.referrer || undefined,
+        },
+      };
+
+      const enquiryRes = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(enquiryPayload),
+      });
+
+      if (!enquiryRes.ok) {
+        throw new Error('Enquiry submission failed');
+      }
+
+      setSubmitted(true);
+      sessionStorage.removeItem('enquiryData');
+
+      const message = `
 *New Enquiry*
 Name: ${formData.name}
 Phone: ${formData.phone}
 Email: ${formData.email}
-Service: ${formData.service}
+Service: ${selectedServiceLabel}
 Size: ${formData.size}
 Material: ${formData.material}
 Quantity: ${formData.quantity}
 Notes: ${formData.notes}
-    `.trim();
+      `.trim();
 
-    setTimeout(() => {
-      window.open(`https://wa.me/917709831071?text=${encodeURIComponent(message)}`, '_blank');
-      router.push(`/${currentLocale}/home`);
-    }, 1800);
+      setTimeout(() => {
+        window.open(`https://wa.me/917709831071?text=${encodeURIComponent(message)}`, '_blank');
+        router.push(`/${currentLocale}/home`);
+      }, 1800);
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      setErrors((current) => ({
+        ...current,
+        submit: 'Could not submit the enquiry right now. Please try again.',
+      }));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -393,6 +522,7 @@ Notes: ${formData.notes}
                     )}
                   </button>
                 </div>
+                {errors.submit ? <ErrorText message={errors.submit} /> : null}
               </div>
             </form>
           </section>

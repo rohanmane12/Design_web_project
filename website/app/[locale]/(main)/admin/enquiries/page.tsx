@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Eye, Mail, Phone, Trash2, User, X } from 'lucide-react';
+import { Eye, FileSearch, Mail, Phone, Search, Trash2, User, X } from 'lucide-react';
 
 interface Enquiry {
   _id: string;
@@ -25,6 +25,12 @@ interface Enquiry {
 
 const filters = ['all', 'pending', 'contacted', 'completed', 'cancelled'] as const;
 const statusOptions = filters.slice(1) as Enquiry['status'][];
+const sortOptions = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'name', label: 'Customer name' },
+  { value: 'status', label: 'Status' },
+] as const;
 const statusTone: Record<Enquiry['status'], string> = {
   pending: 'bg-[#fff2e8] text-[#c2410c]',
   contacted: 'bg-[#e8f2ff] text-[#1d4ed8]',
@@ -38,6 +44,11 @@ export default function AdminEnquiries() {
   const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null);
   const [filter, setFilter] = useState<(typeof filters)[number]>('all');
   const [adminNotesDraft, setAdminNotesDraft] = useState('');
+  const [search, setSearch] = useState('');
+  const [hasAttachment, setHasAttachment] = useState<'all' | 'with-file' | 'without-file'>('all');
+  const [sortBy, setSortBy] = useState<(typeof sortOptions)[number]['value']>('newest');
+  const [page, setPage] = useState(1);
+  const pageSize = 8;
 
   useEffect(() => {
     const fetchEnquiries = async () => {
@@ -54,7 +65,51 @@ export default function AdminEnquiries() {
     void fetchEnquiries();
   }, []);
 
-  const filteredEnquiries = useMemo(() => enquiries.filter((enquiry) => filter === 'all' || enquiry.status === filter), [enquiries, filter]);
+  const filteredEnquiries = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    const filtered = enquiries.filter((enquiry) => {
+      const matchesStatus = filter === 'all' || enquiry.status === filter;
+      const matchesAttachment =
+        hasAttachment === 'all' ||
+        (hasAttachment === 'with-file' ? Boolean(enquiry.fileUrl) : !enquiry.fileUrl);
+      const matchesSearch =
+        !query ||
+        [enquiry.name, enquiry.email, enquiry.phone, enquiry.productName?.en || '']
+          .join(' ')
+          .toLowerCase()
+          .includes(query);
+
+      return matchesStatus && matchesAttachment && matchesSearch;
+    });
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'oldest') {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name);
+      }
+
+      if (sortBy === 'status') {
+        return a.status.localeCompare(b.status);
+      }
+
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [enquiries, filter, hasAttachment, search, sortBy]);
+
+  const paginatedEnquiries = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredEnquiries.slice(start, start + pageSize);
+  }, [filteredEnquiries, page]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredEnquiries.length / pageSize));
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, hasAttachment, search, sortBy]);
 
   const updateEnquiry = async (id: string, payload: Partial<Pick<Enquiry, 'status' | 'adminNotes'>>) => {
     try {
@@ -101,6 +156,27 @@ export default function AdminEnquiries() {
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6a7b91]">Leads</p>
         <h2 className="mt-2 text-3xl font-bold text-[#12314f]">Enquiries</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6a7b91]">Track every incoming request, update outreach status, and keep the sales pipeline visible to the team.</p>
+        <div className="mt-6 grid gap-3 lg:grid-cols-[1.2fr_0.45fr_0.45fr]">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6a7b91]" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-2xl border border-[#d8e2ee] bg-white px-11 py-3 text-sm outline-none transition-colors focus:border-[#004B87]"
+              placeholder="Search by customer, email, phone, or product"
+            />
+          </div>
+          <select value={hasAttachment} onChange={(e) => setHasAttachment(e.target.value as typeof hasAttachment)} className="rounded-2xl border border-[#d8e2ee] bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-[#004B87]">
+            <option value="all">All files</option>
+            <option value="with-file">With attachment</option>
+            <option value="without-file">Without attachment</option>
+          </select>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="rounded-2xl border border-[#d8e2ee] bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-[#004B87]">
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </div>
         <div className="mt-6 flex flex-wrap gap-2">
           {filters.map((option) => (
             <button key={option} onClick={() => setFilter(option)} className={`rounded-full px-4 py-2 text-sm font-semibold capitalize transition-colors ${filter === option ? 'bg-[#004B87] text-white' : 'bg-[#eef3f8] text-[#51657c] hover:bg-[#e1e8ef]'}`}>
@@ -130,10 +206,10 @@ export default function AdminEnquiries() {
               </tr>
             </thead>
             <tbody>
-              {filteredEnquiries.length === 0 ? (
+              {paginatedEnquiries.length === 0 ? (
                 <tr><td colSpan={5} className="px-6 py-16 text-center text-[#6a7b91]">No enquiries found for this filter.</td></tr>
               ) : (
-                filteredEnquiries.map((enquiry) => (
+                paginatedEnquiries.map((enquiry) => (
                   <tr key={enquiry._id} className="border-b border-[#f2f5f8] last:border-b-0">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
@@ -141,7 +217,10 @@ export default function AdminEnquiries() {
                         <div><p className="font-semibold text-[#12314f]">{enquiry.name}</p><p className="text-sm text-[#6a7b91]">{enquiry.email}</p></div>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-sm text-[#334155]">{enquiry.productName?.en || 'N/A'}</td>
+                    <td className="px-6 py-5 text-sm text-[#334155]">
+                      <div>{enquiry.productName?.en || 'N/A'}</div>
+                      <div className="mt-1 text-xs text-[#6a7b91]">{enquiry.fileUrl ? 'Attachment included' : 'No attachment'}</div>
+                    </td>
                     <td className="px-6 py-5"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusTone[enquiry.status]}`}>{enquiry.status}</span></td>
                     <td className="px-6 py-5 text-sm text-[#6a7b91]">{new Date(enquiry.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-5">
@@ -155,6 +234,22 @@ export default function AdminEnquiries() {
               )}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="flex items-center justify-between gap-4 rounded-[24px] border border-[#d8e2ee] bg-white px-6 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <p className="text-sm text-[#6a7b91]">
+          Showing {paginatedEnquiries.length === 0 ? 0 : (page - 1) * pageSize + 1}-
+          {Math.min(page * pageSize, filteredEnquiries.length)} of {filteredEnquiries.length} enquiries
+        </p>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1} className="rounded-full border border-[#d8e2ee] px-4 py-2 text-sm font-semibold text-[#12314f] disabled:cursor-not-allowed disabled:opacity-50">
+            Previous
+          </button>
+          <span className="text-sm text-[#6a7b91]">Page {page} of {totalPages}</span>
+          <button onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages} className="rounded-full border border-[#d8e2ee] px-4 py-2 text-sm font-semibold text-[#12314f] disabled:cursor-not-allowed disabled:opacity-50">
+            Next
+          </button>
         </div>
       </section>
 
@@ -184,7 +279,26 @@ export default function AdminEnquiries() {
                 {selectedEnquiry.customization?.notes && <div className="mt-4 rounded-2xl bg-white p-4"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6a7b91]">Notes</p><p className="mt-2 text-sm leading-6 text-[#334155]">{selectedEnquiry.customization.notes}</p></div>}
               </div>
 
-              {selectedEnquiry.fileUrl && <a href={selectedEnquiry.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-2xl bg-[#e7f1fb] px-4 py-3 font-semibold text-[#004B87] no-underline transition-colors hover:bg-[#dbeaf8]">Download attached file</a>}
+              {selectedEnquiry.fileUrl && (
+                <div className="rounded-[24px] border border-[#d8e2ee] p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#12314f]">Attached file</p>
+                      <p className="mt-1 text-sm text-[#6a7b91]">Preview the uploaded customer file directly from admin.</p>
+                    </div>
+                    <a href={selectedEnquiry.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-2xl bg-[#e7f1fb] px-4 py-3 font-semibold text-[#004B87] no-underline transition-colors hover:bg-[#dbeaf8]">
+                      Open full file
+                    </a>
+                  </div>
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-[#d8e2ee] bg-[#f8fbfe]">
+                    <div className="flex items-center gap-2 border-b border-[#d8e2ee] px-4 py-3 text-sm text-[#6a7b91]">
+                      <FileSearch className="h-4 w-4" />
+                      Inline preview
+                    </div>
+                    <iframe src={selectedEnquiry.fileUrl} title="Attached enquiry file preview" className="h-[420px] w-full bg-white" />
+                  </div>
+                </div>
+              )}
 
               <div className="rounded-[24px] border border-[#d8e2ee] p-5">
                 <div className="flex items-center justify-between gap-4">
